@@ -3,32 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garba Tycoon Officiel</title>
+    <title>Garba Tycoon</title>
     <style>
-        body { background: linear-gradient(to bottom, #FF9933, #ffffff, #138808); font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 350px; margin: auto; }
-        .garba-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; min-height: 200px; }
-        .garba-img:active { transform: scale(0.95); }
-        .btn-gift { background: #ff0066; color: white; padding: 15px; border-radius: 50px; text-decoration: none; font-weight: bold; display: block; margin-top: 20px; font-size: 18px; }
-        #score { font-size: 32px; color: #FF9933; font-weight: bold; margin: 15px 0; }
+        body { background: #FF9933; text-align: center; font-family: sans-serif; padding: 20px; margin: 0; }
+        .box { background: white; padding: 20px; border-radius: 20px; max-width: 320px; margin: 40px auto; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
         h1 { color: #138808; font-size: 24px; }
+        #score { font-size: 32px; font-weight: bold; margin: 15px 0; color: #FF9933; }
+        img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.1s; border: 3px solid #f0f0f0; }
+        img:active { transform: scale(0.95); }
+        .btn { background: #ff0066; color: white; padding: 15px; display: block; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="box">
         <h1>GARBA TYCOON 🇨🇮</h1>
-        <p>Tape sur le thon pour gagner !</p>
+        <p>Tape sur le thon !</p>
         <div id="score">0 Atchékés</div>
         
-        <img src="https://raw.githubusercontent.com/madochekonan6-cmd/Garba_tycoon/main/8ee8e877ac8f61dd924cf115d90e023c.jpg" class="garba-img" id="clickBtn" alt="Garba">
+        <img src="1770129065873.png" id="gameBtn">
         
-        <a href="https://otieu.com/4/10555812" class="btn-gift">🎁 CADEAU : +1000 Atchékés</a>
+        <a href="https://otieu.com/4/10555812" class="btn">🎁 CADEAU : +1000 Atchékés</a>
     </div>
     <script>
         let count = 0;
-        const btn = document.getElementById('clickBtn');
-        const display = document.getElementById('score');
-        btn.onclick = () => { count += 10; display.innerHTML = count + " Atchékés"; };
+        document.getElementById('gameBtn').onclick = function() {
+            count += 10;
+            document.getElementById('score').innerHTML = count + " Atchékés";
+        };
     </script>
 </body>
 </html>
+
