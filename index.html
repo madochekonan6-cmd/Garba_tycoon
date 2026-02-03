@@ -1,95 +1,154 @@
 
-                
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon Pro</title>
+    <title>Garba Tycoon - Empire</title>
     <style>
-        body { background-color: #011627; color: white; text-align: center; font-family: sans-serif; margin: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+        :root { --main-color: #ff9f1c; --bg-dark: #011627; }
+        body { background-color: var(--bg-dark); color: white; text-align: center; font-family: sans-serif; margin: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* Score avec animation de rebond */
-        .score-container { margin-top: 40px; transition: transform 0.1s; }
-        .score-value { font-size: 50px; font-weight: bold; color: #ff9f1c; }
+        .header { display: flex; justify-content: space-between; padding: 15px; align-items: center; }
+        .lvl-badge { background: #2ec4b6; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 12px; }
 
-        /* Zone de clic */
-        .garba-main { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; touch-action: manipulation; }
-        #garba-button { width: 80%; max-width: 320px; transition: transform 0.05s; z-index: 2; }
-        #garba-button:active { transform: scale(0.90); }
+        .score-section { margin: 10px 0; }
+        .score-value { font-size: 48px; font-weight: bold; color: var(--main-color); margin: 0; }
+        .passive-income { color: #2ec4b6; font-size: 14px; }
 
-        /* Animation des points qui sautent */
-        .floating-point {
-            position: absolute;
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
-            pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-            z-index: 10;
+        /* Cercle de progression style Hamster */
+        .garba-container { position: relative; width: 300px; height: 300px; margin: auto; display: flex; align-items: center; justify-content: center; }
+        .progress-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 8px solid rgba(255,255,255,0.1); border-top: 8px solid var(--main-color); transform: rotate(0deg); transition: transform 0.3s; }
+        
+        #garba-button { 
+            width: 260px; height: 260px; border-radius: 50%; object-fit: cover; 
+            border: 5px solid #fff; box-shadow: 0 0 30px rgba(255,159,28,0.5);
+            transition: transform 0.05s; z-index: 5;
         }
+        #garba-button:active { transform: scale(0.92); }
 
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-200px); }
-        }
+        /* Système de Cartes / Shop */
+        .cards-container { display: flex; overflow-x: auto; padding: 10px; gap: 10px; background: rgba(255,255,255,0.05); }
+        .card { min-width: 120px; background: #1a2a3a; padding: 10px; border-radius: 15px; border: 1px solid var(--main-color); font-size: 11px; }
+        .card button { background: var(--main-color); border: none; border-radius: 10px; padding: 5px; width: 100%; font-weight: bold; margin-top: 5px; }
 
-        .bottom-menu { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 50px 50px 0 0; }
+        .floating-point { position: absolute; color: white; font-size: 30px; font-weight: bold; animation: floatUp 0.7s forwards; pointer-events: none; z-index: 20; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-150px); } }
+
+        .footer-menu { display: flex; justify-content: space-around; padding: 15px; background: #0b1e2d; }
     </style>
 </head>
 <body>
 
-    <div class="score-container" id="score-box">
-        <div style="color: #ff9f1c;">Points</div>
-        <div class="score-value" id="points">0</div>
+    <div class="header">
+        <div class="lvl-badge" id="lvl-name">Niveau 1: Apprenti</div>
+        <button style="background:#2ec4b6; border:none; color:white; border-radius:15px; padding:5px 10px;">Wallet</button>
     </div>
 
-    <div class="garba-main" id="click-area">
+    <div class="score-section">
+        <p class="score-value" id="points">0</p>
+        <p class="passive-income">Revenu passif: +<span id="pps">0</span>/h</p>
+    </div>
+
+    <div class="garba-container" id="click-area">
+        <div class="progress-ring" id="ring"></div>
         <img src="1770136311457.png" id="garba-button" alt="Garba">
     </div>
 
-    <div class="bottom-menu">
-        <div style="color: #e71d36;">⚡ Boost</div>
-        <div style="color: #ff9f1c;">💰 Earn</div>
-        <div style="color: white;">👥 Invite</div>
+    <p style="font-size: 12px; color: #aaa;">Cartes d'investissement (Revenu Passif)</p>
+    <div class="cards-container">
+        <div class="card">
+            <div>🛒 Stand de Rue</div>
+            <div style="color:#2ec4b6">+50 pts/h</div>
+            <button onclick="buyCard(500, 50)">Prix: 500</button>
+        </div>
+        <div class="card">
+            <div>👩‍🍳 Recruter Tantie</div>
+            <div style="color:#2ec4b6">+200 pts/h</div>
+            <button onclick="buyCard(2000, 200)">Prix: 2k</button>
+        </div>
+        <div class="card">
+            <div>📺 Pub TV (Ad)</div>
+            <div style="color:#e71d36">Regarder Pub</div>
+            <button onclick="showAd()">+1000 pts</button>
+        </div>
+    </div>
+
+    <div class="footer-menu">
+        <div>🚀 Boost</div>
+        <div onclick="alert('Publiée bientôt pour gagner des TON')">💰 Earn</div>
+        <div>👥 Invite</div>
     </div>
 
     <script>
-        let count = localStorage.getItem('garbaPoints') ? parseInt(localStorage.getItem('garbaPoints')) : 0;
+        let count = parseInt(localStorage.getItem('garbaPoints')) || 0;
+        let pps = parseInt(localStorage.getItem('garbaPPS')) || 0;
         const scoreDisplay = document.getElementById('points');
-        const scoreBox = document.getElementById('score-box');
-        const clickArea = document.getElementById('click-area');
+        const ppsDisplay = document.getElementById('pps');
+        const ring = document.getElementById('ring');
 
-        scoreDisplay.innerText = count.toLocaleString();
-
-        clickArea.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Empêche le zoom
+        function updateUI() {
+            scoreDisplay.innerText = Math.floor(count).toLocaleString();
+            ppsDisplay.innerText = pps.toLocaleString();
+            let progress = (count % 1000) / 10;
+            ring.style.transform = `rotate(${progress * 3.6}deg)`;
             
-            // 1. Augmenter le score
+            if(count > 5000) document.getElementById('lvl-name').innerText = "Niveau 2: Vendeur Pro";
+            if(count > 20000) document.getElementById('lvl-name').innerText = "Niveau 3: Roi du Garba";
+        }
+
+        // Clic sur le Garba
+        document.getElementById('click-area').addEventListener('touchstart', (e) => {
+            e.preventDefault();
             count++;
-            scoreDisplay.innerText = count.toLocaleString();
-            localStorage.setItem('garbaPoints', count);
-
-            // 2. Vibration
             if (navigator.vibrate) navigator.vibrate(40);
-
-            // 3. Faire sauter le score principal
-            scoreBox.style.transform = "scale(1.1)";
-            setTimeout(() => scoreBox.style.transform = "scale(1)", 100);
-
-            // 4. Créer le point qui saute (Floating Text)
-            const touch = e.touches[0];
-            const point = document.createElement('div');
-            point.innerText = "+1";
-            point.className = 'floating-point';
-            point.style.left = touch.clientX - 10 + 'px';
-            point.style.top = touch.clientY - 40 + 'px';
             
-            document.body.appendChild(point);
-
-            // Supprimer l'élément après l'animation
-            setTimeout(() => point.remove(), 800);
+            const touch = e.touches[0];
+            const p = document.createElement('div');
+            p.innerText = "+1";
+            p.className = 'floating-point';
+            p.style.left = touch.clientX + 'px';
+            p.style.top = touch.clientY + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 700);
+            
+            updateUI();
+            localStorage.setItem('garbaPoints', count);
         });
+
+        // Système d'achat de cartes
+        function buyCard(price, income) {
+            if(count >= price) {
+                count -= price;
+                pps += income;
+                localStorage.setItem('garbaPPS', pps);
+                updateUI();
+                alert("Carte achetée ! Ton revenu passif augmente.");
+            } else {
+                alert("Pas assez de points !");
+            }
+        }
+
+        // Simulation de Publicité
+        function showAd() {
+            alert("Chargement de la publicité (Google AdMob / Unity)...");
+            setTimeout(() => {
+                count += 1000;
+                updateUI();
+                alert("Bravo ! Tu as gagné 1000 points grâce à la pub.");
+            }, 2000);
+        }
+
+        // Revenu passif (chaque seconde)
+        setInterval(() => {
+            if(pps > 0) {
+                count += (pps / 3600);
+                updateUI();
+                localStorage.setItem('garbaPoints', count);
+            }
+        }, 1000);
+
+        updateUI();
     </script>
 </body>
 </html>
