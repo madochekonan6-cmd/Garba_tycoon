@@ -5,30 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garba Tycoon</title>
     <style>
-        body { background: #FF9933; text-align: center; font-family: sans-serif; padding: 20px; }
-        .box { background: white; padding: 20px; border-radius: 20px; max-width: 320px; margin: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-        h1 { color: #138808; }
-        #score { font-size: 32px; font-weight: bold; margin: 10px 0; color: #FF9933; }
-        img { width: 100%; border-radius: 15px; cursor: pointer; }
-        img:active { transform: scale(0.98); }
-        .btn { background: #ff0066; color: white; padding: 10px; display: block; text-decoration: none; border-radius: 10px; margin-top: 15px; font-weight: bold; }
+        body { background: #FF9933; text-align: center; font-family: 'Arial', sans-serif; padding: 20px; margin: 0; }
+        .box { background: white; padding: 20px; border-radius: 25px; max-width: 320px; margin: 40px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 4px solid #138808; }
+        h1 { color: #138808; font-size: 26px; text-transform: uppercase; margin-bottom: 5px; }
+        #score { font-size: 36px; font-weight: bold; margin: 15px 0; color: #FF9933; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        img { width: 100%; border-radius: 20px; cursor: pointer; transition: transform 0.1s; }
+        img:active { transform: scale(0.92); }
+        .btn { background: #ff0066; color: white; padding: 18px; display: block; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 0 #b30047; }
+        .btn:active { transform: translateY(3px); box-shadow: none; }
     </style>
 </head>
 <body>
     <div class="box">
         <h1>GARBA TYCOON 🇨🇮</h1>
-        <p>Tape sur le thon !</p>
         <div id="score">0 Atchékés</div>
         
-        <img src="https://www.referencetv.tg/wp-content/uploads/2023/12/Garba.jpg" id="gameBtn">
+        <img src="https://api.screenshotmachine.com/?key=ca3976&url=https%3A%2F%2Ffiles.oaiusercontent.com%2Ffile-X8pM8Pz5z5v5z5v5z5v5z5v5&device=desktop&dimension=1024x1024" id="gameBtn" alt="Garba Game">
         
-        <a href="https://otieu.com/4/10555812" class="btn">🎁 CADEAU : +1000 Atchékés</a>
+        <p style="font-weight:bold; color:#555;">TAPE SUR LE PLAT !</p>
+        <a href="https://otieu.com/4/10555812" class="btn">🎁 CADEAU : +5000 Atchékés</a>
     </div>
+
     <script>
         let count = 0;
-        document.getElementById('gameBtn').onclick = function() {
-            count += 10;
-            document.getElementById('score').innerHTML = count + " Atchékés";
+        const scoreDisplay = document.getElementById('score');
+        const gameBtn = document.getElementById('gameBtn');
+
+        gameBtn.onclick = function() {
+            count += 50; // On gagne plus maintenant !
+            scoreDisplay.innerHTML = count.toLocaleString() + " Atchékés";
+            
+            // Petit effet de vibration si le tel le permet
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate(50);
+            }
         };
     </script>
 </body>
