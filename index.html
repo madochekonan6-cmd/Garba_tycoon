@@ -1,81 +1,95 @@
 
+                
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Garba Tycoon Pro</title>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
-        body { background-color: #011627; color: white; text-align: center; font-family: 'Arial', sans-serif; margin: 0; padding: 20px; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+        body { background-color: #011627; color: white; text-align: center; font-family: sans-serif; margin: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
         
-        /* Bouton Wallet en haut */
-        .header { display: flex; justify-content: center; padding-top: 10px; }
-        .wallet-btn { background-color: #2ec4b6; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        /* Score avec animation de rebond */
+        .score-container { margin-top: 40px; transition: transform 0.1s; }
+        .score-value { font-size: 50px; font-weight: bold; color: #ff9f1c; }
 
-        /* Score */
-        .score-container { margin-top: 20px; }
-        .score-label { font-size: 18px; color: #ff9f1c; margin-bottom: 5px; }
-        .score-value { font-size: 45px; font-weight: bold; }
+        /* Zone de clic */
+        .garba-main { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; touch-action: manipulation; }
+        #garba-button { width: 80%; max-width: 320px; transition: transform 0.05s; z-index: 2; }
+        #garba-button:active { transform: scale(0.90); }
 
-        /* Plat de Garba */
-        .garba-main { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; }
-        #garba-button { width: 85%; max-width: 320px; cursor: pointer; transition: transform 0.1s; filter: drop-shadow(0 0 20px rgba(255, 159, 28, 0.4)); }
-        #garba-button:active { transform: scale(0.92); }
+        /* Animation des points qui sautent */
+        .floating-point {
+            position: absolute;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            z-index: 10;
+        }
 
-        /* Menu du bas */
-        .bottom-menu { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 50px; margin-bottom: 20px; }
-        .menu-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; text-transform: uppercase; cursor: pointer; }
-        .icon-circle { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; font-size: 18px; }
-        .boost { color: #e71d36; border-color: #e71d36; }
-        .earn { color: #ff9f1c; border-color: #ff9f1c; }
-        .invite { color: #ffffff; border-color: #ffffff; }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-200px); }
+        }
+
+        .bottom-menu { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 50px 50px 0 0; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <button class="wallet-btn">Connect Wallet</button>
-    </div>
-
-    <div class="score-container">
-        <div class="score-label">Points:</div>
+    <div class="score-container" id="score-box">
+        <div style="color: #ff9f1c;">Points</div>
         <div class="score-value" id="points">0</div>
     </div>
 
-    <div class="garba-main">
+    <div class="garba-main" id="click-area">
         <img src="1770136311457.png" id="garba-button" alt="Garba">
     </div>
 
     <div class="bottom-menu">
-        <div class="menu-item">
-            <div class="icon-circle boost">⚡</div>
-            <span>Boosts</span>
-        </div>
-        <div class="menu-item">
-            <div class="icon-circle earn">T</div>
-            <span>Earn TON</span>
-        </div>
-        <div class="menu-item">
-            <div class="icon-circle invite">👥</div>
-            <span>Invite</span>
-        </div>
+        <div style="color: #e71d36;">⚡ Boost</div>
+        <div style="color: #ff9f1c;">💰 Earn</div>
+        <div style="color: white;">👥 Invite</div>
     </div>
 
     <script>
         let count = localStorage.getItem('garbaPoints') ? parseInt(localStorage.getItem('garbaPoints')) : 0;
         const scoreDisplay = document.getElementById('points');
+        const scoreBox = document.getElementById('score-box');
+        const clickArea = document.getElementById('click-area');
+
         scoreDisplay.innerText = count.toLocaleString();
 
-        document.getElementById('garba-button').addEventListener('click', (e) => {
+        clickArea.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Empêche le zoom
+            
+            // 1. Augmenter le score
             count++;
             scoreDisplay.innerText = count.toLocaleString();
             localStorage.setItem('garbaPoints', count);
-            
-            // Petit effet de vibration sur mobile
+
+            // 2. Vibration
             if (navigator.vibrate) navigator.vibrate(40);
+
+            // 3. Faire sauter le score principal
+            scoreBox.style.transform = "scale(1.1)";
+            setTimeout(() => scoreBox.style.transform = "scale(1)", 100);
+
+            // 4. Créer le point qui saute (Floating Text)
+            const touch = e.touches[0];
+            const point = document.createElement('div');
+            point.innerText = "+1";
+            point.className = 'floating-point';
+            point.style.left = touch.clientX - 10 + 'px';
+            point.style.top = touch.clientY - 40 + 'px';
+            
+            document.body.appendChild(point);
+
+            // Supprimer l'élément après l'animation
+            setTimeout(() => point.remove(), 800);
         });
     </script>
 </body>
-                </html>
-                
+</html>
