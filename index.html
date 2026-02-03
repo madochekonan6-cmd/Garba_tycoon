@@ -3,88 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garba Tycoon by KKR</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Garba Tycoon Officiel</title>
     <style>
-        body {
-            background: linear-gradient(to bottom, #FF8800, #ffffff, #009E60);
-            height: 100vh;
-            text-align: center;
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: hidden;
-        }
-        .header { margin-top: 20px; color: #333; }
-        .score-container { font-size: 35px; font-weight: bold; color: #fff; text-shadow: 2px 2px 4px #000; margin: 10px 0; }
-        
-        .garba-btn {
-            width: 220px;
-            height: 220px;
-            background: url('https://img.icons8.com/emoji/256/bowl-with-spoon-emoji.png') no-repeat center;
-            background-size: contain;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.1s;
-            margin: 30px 0;
-        }
-        .garba-btn:active { transform: scale(0.9); }
-
-        .ads-btn {
-            background-color: #e91e63;
-            color: white;
-            padding: 18px 30px;
-            border-radius: 50px;
-            border: none;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .footer { margin-top: auto; padding-bottom: 20px; font-size: 12px; color: #555; }
+        body { background: linear-gradient(to bottom, #FF9933, #ffffff, #138808); font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 350px; margin: auto; }
+        .garba-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.1s; }
+        .garba-img:active { transform: scale(0.95); }
+        .btn-gift { background: #ff0066; color: white; padding: 15px; border-radius: 50px; text-decoration: none; font-weight: bold; display: block; margin-top: 20px; }
+        #score { font-size: 28px; color: #FF9933; font-weight: bold; margin: 10px 0; }
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="container">
         <h1>GARBA TYCOON 🇨🇮</h1>
-        <p>Deviens le Roi du Garba de Treichville !</p>
+        <p>Deviens le plus riche vendeur !</p>
+        <div id="score">0 Atchékés</div>
+        <img src="https://i.ibb.co/v4m3S3C/garba-thon.jpg" class="garba-img" id="clickBtn">
+        <a href="https://otieu.com/4/10555812" class="btn-gift">🎁 CADEAU : +1000 Atchékés</a>
     </div>
-
-    <div class="score-container">
-        <span id="score">0</span> Atchékés
-    </div>
-
-    <button class="garba-btn" onclick="addPoint()"></button>
-
-    <button class="ads-btn" onclick="openMonetag()">🎁 CADEAU : +1000 Atchékés</button>
-
-    <div class="footer">Propulsé par KKR Business</div>
-
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let score = 0;
-
-        function addPoint() {
-            score++;
-            document.getElementById('score').innerText = score;
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        function openMonetag() {
-            // Utilisation de ton lien direct pour générer des revenus
-            tg.openLink('https://otieu.com/4/10555812');
-            
-            // Récompense pour le joueur
-            score += 1000;
-            document.getElementById('score').innerText = score;
-            alert("Félicitations ! Tu as reçu 1000 Atchékés bonus !");
-        }
+        let count = 0;
+        const btn = document.getElementById('clickBtn');
+        const display = document.getElementById('score');
+        btn.onclick = () => { count += 10; display.innerHTML = count + " Atchékés"; };
     </script>
 </body>
 </html>
