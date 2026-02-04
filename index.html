@@ -3,174 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GarbaTycoon Evolution</title>
+    <title>GarbaTycoon Heritage</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --gold: #f1c40f;
+            --platinum: #e5e4e2;
+            --diamond: #b9f2ff;
+        }
         body {
-            margin: 0; padding: 0;
-            background: #050a0f; color: white; font-family: 'Arial', sans-serif;
-            display: flex; flex-direction: column; align-items: center;
-            height: 100vh; overflow: hidden;
+            margin: 0; background: #050a0f; color: white;
+            font-family: 'Arial', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
         }
 
-        .header { text-align: center; margin-top: 15px; }
-        .score-container { font-size: 50px; font-weight: bold; color: #f39c12; margin: 0; }
-        .passive-income { color: #1fb0a3; font-size: 14px; }
+        /* Header */
+        .header { text-align: center; padding: 15px; background: rgba(26, 58, 90, 0.3); }
+        .score { font-size: 48px; font-weight: 900; color: #f39c12; }
+        .profit { color: #2ecc71; font-size: 14px; font-weight: bold; }
 
-        .click-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; width: 100%; }
-        .main-circle {
+        /* Bouton 3D */
+        .click-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
+        .btn-3d {
             width: 220px; height: 220px; border-radius: 50%;
-            border: 6px solid #333; display: flex; justify-content: center; align-items: center;
-            background: radial-gradient(circle, #1a3a5a 0%, #050a0f 100%);
-            box-shadow: 0 0 30px rgba(243, 156, 18, 0.3);
-            transition: transform 0.05s;
+            background: #f39c12; border: 6px solid #fff;
+            position: relative; cursor: pointer;
+            box-shadow: 0 15px 0 #a06a09, 0 20px 30px rgba(0,0,0,0.6);
+            transition: all 0.05s; display: flex; justify-content: center; align-items: center;
         }
-        .main-circle:active { transform: scale(0.95); }
-        .garba-img { width: 180px; border-radius: 50%; }
+        .btn-3d:active { transform: translateY(10px); box-shadow: 0 5px 0 #a06a09, 0 10px 20px rgba(0,0,0,0.6); }
+        .btn-3d img { width: 85%; height: 85%; border-radius: 50%; object-fit: cover; }
 
-        /* SECTION CARTES */
-        .cards-section {
-            width: 100%; background: #0d1b2a; border-radius: 25px 25px 0 0;
-            padding: 15px; box-sizing: border-box;
+        /* Modals */
+        .modal {
+            position: fixed; top: 100%; left: 0; width: 100%; height: 85%;
+            background: #0d1b2a; border-radius: 30px 30px 0 0;
+            z-index: 100; transition: 0.4s; padding: 20px; box-sizing: border-box;
+            display: flex; flex-direction: column;
         }
-        .cards-container {
-            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;
-        }
+        .modal.active { top: 15%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-        /* STYLE DES CARTES SELON LE NIVEAU */
-        .card {
-            min-width: 150px; background: #1a3a5a; border-radius: 15px;
-            padding: 12px; text-align: center; border: 2px solid #333;
-            transition: 0.3s; position: relative;
+        /* Grid Cartes */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; }
+        .card { 
+            background: #1a3a5a; border-radius: 15px; padding: 12px; 
+            text-align: center; border: 1px solid #333; position: relative;
         }
+        .card.lvl-5 { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.3); }
+        .card.lvl-10 { border-color: var(--platinum); box-shadow: 0 0 10px rgba(229, 228, 226, 0.3); }
+        .card.lvl-15 { border-color: var(--diamond); box-shadow: 0 0 15px rgba(185, 242, 255, 0.5); }
         
-        /* Rareté Or */
-        .card.gold { border-color: #f1c40f; box-shadow: 0 0 10px #f1c40f; }
-        /* Rareté Platine/Elevé */
-        .card.platinum { border-color: #3498db; box-shadow: 0 0 10px #3498db; }
-        /* Rareté Diamant */
-        .card.diamond { border-color: #9b59b6; box-shadow: 0 0 20px #9b59b6; background: linear-gradient(145deg, #1a3a5a, #4b0082); }
-
-        .card-lvl { font-size: 10px; color: #aaa; margin-bottom: 5px; }
-        .card-title { font-size: 13px; font-weight: bold; display: block; height: 32px; }
-        .card-bonus { color: #2ecc71; font-size: 11px; margin: 5px 0; }
-        .card-price-btn {
-            background: #f39c12; color: black; border-radius: 8px;
-            padding: 8px; font-weight: bold; margin-top: 5px; cursor: pointer;
+        .buy-btn { 
+            width: 100%; margin-top: 8px; background: #f39c12; color: #000; 
+            border: none; border-radius: 8px; padding: 6px; font-weight: bold;
         }
-        .card.maxed .card-price-btn { background: #555; cursor: default; }
 
-        .plus-one { position: absolute; color: white; font-size: 30px; font-weight: bold; animation: floatUp 0.7s forwards; }
-        @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
+        /* Menu Bas */
+        .nav { 
+            display: flex; justify-content: space-around; background: #050a0f; 
+            padding: 15px 0 30px; border-top: 1px solid #1a3a5a;
+        }
+        .nav-item { text-align: center; font-size: 10px; cursor: pointer; color: #888; }
+        .nav-item.active { color: #f39c12; }
+        .icon { font-size: 24px; margin-bottom: 4px; display: block; }
+
+        /* Missions */
+        .task { background: #112233; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+        .plus-one { position: absolute; font-weight: bold; color: white; animation: float 0.7s forwards; pointer-events: none; }
+        @keyframes float { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-100px); } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="score-container" id="score">0</div>
-        <div class="passive-income">Revenu : +<span id="passive-val">0</span>/h</div>
+        <div class="score" id="score">0</div>
+        <div class="profit">Revenu: +<span id="pps">0</span>/h</div>
     </div>
 
     <div class="click-area">
-        <div class="main-circle" id="tap-target">
-            <img src="https://i.ibb.co/30a0574/garba-img.jpg" class="garba-img" onerror="this.src='https://raw.githubusercontent.com/richard-coding-officiel/Garba_tycoon/main/garba-img.jpg'">
+        <div class="btn-3d" id="main-btn">
+            <img src="https://i.ibb.co/30a0574/garba-img.jpg" onerror="this.src='https://raw.githubusercontent.com/richard-coding-officiel/Garba_tycoon/main/garba-img.jpg'">
         </div>
     </div>
 
-    <div class="cards-section">
-        <div style="font-size: 12px; margin-bottom: 10px; color: #888;">Améliorer vos produits (Max Nv. 15)</div>
-        <div class="cards-container" id="cards-list">
-            </div>
+    <div id="modal-cards" class="modal">
+        <div class="modal-header"><h3>🍽️ Menu Ivoirien</h3><span onclick="closeAll()">✖</span></div>
+        <div class="grid" id="grid-upgrades"></div>
+    </div>
+
+    <div id="modal-earn" class="modal">
+        <div class="modal-header"><h3>💰 Gagner Plus</h3><span onclick="closeAll()">✖</span></div>
+        <div style="overflow-y:auto;">
+            <p style="color:#f39c12; font-weight:bold;">Publicités</p>
+            <div class="task"><span>Pub Standard (+1k)</span><button class="buy-btn" style="width:70px;" onclick="addPoints(1000)">Voir</button></div>
+            <div class="task"><span>Pub Bonus (x10) (+10k)</span><button class="buy-btn" style="width:70px;" onclick="addPoints(10000)">Voir</button></div>
+            
+            <p style="color:#40E0D0; font-weight:bold;">Réseaux Sociaux</p>
+            <div class="task"><span>Abo TikTok Richard</span><button class="buy-btn" style="width:70px;" onclick="window.open('https://www.tiktok.com/@richard_gaming_officiel'); addPoints(5000)">Suivre</button></div>
+            <div class="task"><span>Abo TikTok Mobile PC</span><button class="buy-btn" style="width:70px;" onclick="window.open('https://www.tiktok.com/@mobile_pc_gamer1'); addPoints(5000)">Suivre</button></div>
+            <div class="task"><span>Chaîne WhatsApp</span><button class="buy-btn" style="width:70px;" onclick="window.open('https://whatsapp.com/channel/0029VbByzLELI8YSRz9oO614'); addPoints(5000)">Rejoindre</button></div>
+
+            <p style="color:#2ecc71; font-weight:bold;">Parrainage</p>
+            <div class="task"><span>Inviter un Ami (+25k)</span><button class="buy-btn" style="width:70px;" onclick="tg.openTelegramLink('https://t.me/share/url?url=Joue_a_GarbaTycoon');">Invite</button></div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active" onclick="closeAll()"><span class="icon">🌶️</span>JEU</div>
+        <div class="nav-item" onclick="openModal('modal-cards')"><span class="icon">🎴</span>PRODUITS</div>
+        <div class="nav-item" onclick="openModal('modal-earn')"><span class="icon">💰</span>REVENUS</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        let score = 0;
-        let totalPassive = 0;
+        let score = 0, pps = 0;
 
-        const upgradeData = [
-            { id: 0, name: "Thon de Qualité", basePrice: 200, baseProfit: 15, lvl: 0 },
-            { id: 1, name: "Huile Parfumée", basePrice: 800, baseProfit: 45, lvl: 0 },
-            { id: 2, name: "Piment de Grand-Mère", basePrice: 2500, baseProfit: 120, lvl: 0 },
-            { id: 3, name: "Attiéké de Dabou", basePrice: 7000, baseProfit: 350, lvl: 0 },
-            { id: 4, name: "Stand de Luxe", basePrice: 15000, baseProfit: 800, lvl: 0 }
+        const upgrades = [
+            { id:0, name: "Attiéké Amour", price: 150, profit: 20, lvl: 0 },
+            { id:1, name: "Attiéké Huile Rouge", price: 600, profit: 65, lvl: 0 },
+            { id:2, name: "Garba Abo", price: 2500, profit: 180, lvl: 0 },
+            { id:3, name: "Garba Aucha", price: 8000, profit: 450, lvl: 0 },
+            { id:4, name: "Garba Classe", price: 20000, profit: 1200, lvl: 0 }
         ];
 
-        function renderCards() {
-            const container = document.getElementById('cards-list');
-            container.innerHTML = "";
-            upgradeData.forEach(item => {
-                let currentPrice = Math.floor(item.basePrice * Math.pow(1.5, item.lvl));
-                let currentProfit = item.baseProfit * (item.lvl + 1);
-                
-                let rarityClass = "";
-                if (item.lvl >= 15) rarityClass = "diamond maxed";
-                else if (item.lvl >= 10) rarityClass = "platinum";
-                else if (item.lvl >= 5) rarityClass = "gold";
+        function openModal(id) { closeAll(); document.getElementById(id).classList.add('active'); render(); }
+        function closeAll() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
 
+        function render() {
+            const container = document.getElementById('grid-upgrades');
+            container.innerHTML = '';
+            upgrades.forEach(u => {
+                let cost = Math.floor(u.price * Math.pow(1.5, u.lvl));
+                let rarity = u.lvl >= 15 ? 'lvl-15' : (u.lvl >= 10 ? 'lvl-10' : (u.lvl >= 5 ? 'lvl-5' : ''));
                 container.innerHTML += `
-                    <div class="card ${rarityClass}">
-                        <div class="card-lvl">Niveau ${item.lvl}/15</div>
-                        <span class="card-title">${item.name}</span>
-                        <div class="card-bonus">+${currentProfit}/h</div>
-                        <div class="card-price-btn" onclick="buyCard(${item.id})">
-                            ${item.lvl >= 15 ? 'MAX' : '🪙 ' + currentPrice.toLocaleString()}
-                        </div>
-                    </div>
-                `;
+                    <div class="card ${rarity}">
+                        <div style="font-size:9px;">Lvl ${u.lvl}/15</div>
+                        <div style="font-size:12px; font-weight:bold; height:30px;">${u.name}</div>
+                        <div style="color:#2ecc71; font-size:11px;">+${u.profit}/h</div>
+                        <button class="buy-btn" onclick="buy(${u.id})" ${score < cost || u.lvl >= 15 ? 'disabled' : ''}>
+                            ${u.lvl >= 15 ? 'MAX' : cost.toLocaleString()}
+                        </button>
+                    </div>`;
             });
+            document.getElementById('score').innerText = Math.floor(score).toLocaleString();
+            document.getElementById('pps').innerText = pps.toLocaleString();
         }
 
-        function buyCard(id) {
-            let item = upgradeData[id];
-            let price = Math.floor(item.basePrice * Math.pow(1.5, item.lvl));
-            
-            if (item.lvl < 15 && score >= price) {
-                score -= price;
-                item.lvl++;
-                calculatePassive();
-                renderCards();
-                updateUI();
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } else if (item.lvl < 15) {
-                tg.showAlert("Points insuffisants !");
+        function buy(id) {
+            let u = upgrades[id];
+            let cost = Math.floor(u.price * Math.pow(1.5, u.lvl));
+            if (score >= cost && u.lvl < 15) {
+                score -= cost; u.lvl++; pps += u.profit;
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                render();
             }
         }
 
-        function calculatePassive() {
-            totalPassive = upgradeData.reduce((acc, item) => acc + (item.lvl * item.baseProfit), 0);
+        function addPoints(amt) {
+            score += amt; 
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            render();
         }
 
-        function updateUI() {
-            document.getElementById('score').innerText = Math.floor(score).toLocaleString();
-            document.getElementById('passive-val').innerText = totalPassive.toLocaleString();
-        }
-
-        document.getElementById('tap-target').addEventListener('touchstart', (e) => {
+        document.getElementById('main-btn').addEventListener('touchstart', (e) => {
             score += 1;
-            updateUI();
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-            
-            const touch = e.touches[0];
-            const plus = document.createElement('div');
-            plus.className = 'plus-one';
-            plus.style.left = touch.clientX + 'px';
-            plus.style.top = touch.clientY + 'px';
-            plus.innerText = "+1";
-            document.body.appendChild(plus);
-            setTimeout(() => plus.remove(), 700);
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            let p = document.createElement('div');
+            p.className = 'plus-one'; p.innerText = '+1';
+            p.style.left = e.touches[0].clientX + 'px'; p.style.top = e.touches[0].clientY + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 700);
+            render();
         });
 
-        // Gain passif par seconde
-        setInterval(() => {
-            if (totalPassive > 0) {
-                score += (totalPassive / 3600);
-                updateUI();
-            }
-        }, 1000);
-
-        renderCards();
-        updateUI();
+        setInterval(() => { score += (pps/3600); render(); }, 1000);
+        render();
     </script>
 </body>
-</html>
+    </html>
+    
