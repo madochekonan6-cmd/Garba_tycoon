@@ -1,85 +1,77 @@
-// Intégration du SDK Telegram (à mettre dans l'en-tête de ton projet)
-// <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GarbaTycoon</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { margin: 0; background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .app { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: radial-gradient(circle, #3d2616 0%, #000000 100%); }
+        h1 { color: #ffaa00; margin-top: 20px; font-size: 2rem; letter-spacing: 2px; }
+        .score-container { font-size: 3rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .click-area { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; }
+        .gabba-img { width: 100%; filter: drop-shadow(0 0 20px rgba(255,170,0,0.5)); transition: transform 0.05s; cursor: pointer; }
+        .gabba-img:active { transform: scale(0.92); }
+        .plus-one { position: absolute; color: #00ff00; font-size: 2.5rem; font-weight: 900; animation: floatUp 0.7s ease-out forwards; pointer-events: none; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
+        .footer { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px; box-sizing: border-box; }
+        .btn { background: #ffaa00; color: black; padding: 15px; border-radius: 15px; text-align: center; font-weight: bold; font-size: 0.9rem; box-shadow: 0 4px 0 #b37700; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #b37700; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>GARBATYCOON</h1>
+        <div class="score-container">
+            <span>💰</span><span id="score">0</span>
+        </div>
+        
+        <div class="click-area" id="mainBtn">
+            <img src="https://i.ibb.co/m5mX9nC/garba-plate.png" class="gabba-img" id="gabbaImg">
+        </div>
 
-import React, { useState, useEffect } from 'react';
-
-const GarbaTycoon = () => {
-  // 1. État du score avec sauvegarde locale
-  const [points, setPoints] = useState(() => {
-    const saved = localStorage.getItem('garbaPoints');
-    return saved ? parseInt(saved) : 0;
-  });
-
-  const [clicks, setClicks] = useState([]);
-
-  // Sauvegarde automatique dès que le score change
-  useEffect(() => {
-    localStorage.setItem('garbaPoints', points);
-  }, [points]);
-
-  const handleTap = (e) => {
-    // 2. VIBRATION (Haptic Feedback Telegram)
-    if (window.Telegram?.WebApp?.HapticFeedback) {
-      window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-    } else if (navigator.vibrate) {
-      navigator.vibrate(50); // Secours pour navigateur classique
-    }
-
-    // 3. Mise à jour du score
-    setPoints(prev => prev + 1);
-
-    // 4. Animation visuelle (+1)
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const newClick = { id: Date.now(), x, y };
-    
-    setClicks([...clicks, newClick]);
-    setTimeout(() => {
-      setClicks(prev => prev.filter(c => c.id !== newClick.id));
-    }, 800);
-  };
-
-  return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>GARBATYCOON</h1>
-      <div style={styles.scoreBoard}>
-        <span style={{ fontSize: '40px' }}>💰</span>
-        <span style={styles.points}>{points.toLocaleString()}</span>
-      </div>
-
-      <div style={styles.clickArea} onClick={handleTap}>
-        {/* Lien direct vers l'image du plat de Garba */}
-        <img 
-          src="https://i.ibb.co/m5mX9nC/garba-plate.png" 
-          alt="Garba" 
-          style={styles.gabbaImage}
-        />
-        {clicks.map(c => (
-          <span key={c.id} style={{ ...styles.plusOne, top: c.y, left: c.x }}>+1</span>
-        ))}
-      </div>
-
-      <div style={styles.footer}>
-        <div style={styles.btn}>🍟 Menu</div>
-        <div style={styles.btn}>📈 Boosts</div>
-        <div style={styles.btn}>🤝 Amis</div>
-      </div>
+        <div class="footer">
+            <div class="btn" onclick="alert('Bientôt disponible !')">🍟 MENU</div>
+            <div class="btn" onclick="alert('Bientôt disponible !')">📈 BOOST</div>
+            <div class="btn" onclick="alert('Bientôt disponible !')">🤝 AMIS</div>
+        </div>
     </div>
-  );
-};
 
-// Styles CSS intégrés pour éviter les fichiers manquants
-const styles = {
-  container: { height: '100vh', background: 'radial-gradient(circle, #3d2616, #000)', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', userSelect: 'none', touchAction: 'manipulation' },
-  title: { color: '#ffaa00', fontSize: '2.5rem', marginTop: '20px' },
-  scoreBoard: { display: 'flex', alignItems: 'center', gap: '10px' },
-  points: { fontSize: '3rem', fontWeight: 'bold' },
-  clickArea: { position: 'relative', width: '300px', height: '300px' },
-  gabbaImage: { width: '100%', filter: 'drop-shadow(0 0 20px rgba(255,170,0,0.5))', cursor: 'pointer' },
-  plusOne: { position: 'absolute', color: '#00ff00', fontSize: '2rem', fontWeight: 'bold', pointerEvents: 'none', animation: 'floatUp 0.8s forwards' },
-  footer: { width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', padding: '20px' },
-  btn: { background: '#ffaa00', color: 'black', padding: '15px', borderRadius: '15px', textAlign: 'center', fontWeight: 'bold' }
-};
+    <script>
+        let points = parseInt(localStorage.getItem('garba_points')) || 0;
+        const scoreEl = document.getElementById('score');
+        const mainBtn = document.getElementById('mainBtn');
+        const tg = window.Telegram.WebApp;
 
-export default GarbaTycoon;
+        // Initialisation Telegram
+        tg.expand(); 
+        scoreEl.innerText = points.toLocaleString();
+
+        mainBtn.addEventListener('click', (e) => {
+            // 1. Vibration
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+
+            // 2. Score
+            points++;
+            scoreEl.innerText = points.toLocaleString();
+            localStorage.setItem('garba_points', points);
+
+            // 3. Animation +1
+            const plus = document.createElement('div');
+            plus.innerText = '+1';
+            plus.className = 'plus-one';
+            
+            // Positionnement précis du +1
+            const rect = mainBtn.getBoundingClientRect();
+            plus.style.left = (e.clientX - rect.left) + 'px';
+            plus.style.top = (e.clientY - rect.top) + 'px';
+            
+            mainBtn.appendChild(plus);
+            setTimeout(() => plus.remove(), 700);
+        });
+    </script>
+</body>
+</html>
