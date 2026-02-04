@@ -3,28 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon Pro - Officiel</title>
+    <title>Garba Tycoon Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { user-select: none; -webkit-tap-highlight-color: transparent; background: #0b0b0d; color: #fff; font-family: sans-serif; overflow: hidden; }
+        body { user-select: none; background: #0b0b0d; color: #fff; font-family: sans-serif; margin: 0; padding: 0; }
         
-        /* --- SPLASH SCREEN --- */
-        #splash-screen { position: fixed; inset: 0; z-index: 100; background: #0b0b0d; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s; }
-        .fade-out { opacity: 0; pointer-events: none; }
+        /* SPLASH SCREEN - Sécurité ajoutée */
+        #splash-screen { 
+            position: fixed; inset: 0; z-index: 999; background: #0b0b0d; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .fade-out { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
         
-        /* --- ANIMATIONS --- */
-        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
-        @keyframes loading-bar { 0% { width: 0%; } 100% { width: 100%; } }
-        .animate-loading-bar { animation: loading-bar 3.5s linear forwards; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
-        .float-text { position: absolute; color: white; font-weight: 900; font-size: 32px; pointer-events: none; animation: floatUp 0.7s forwards; z-index: 100; }
+        /* ANIMATIONS */
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .animate-bounce-custom { animation: bounce 2s infinite; }
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+        .bar-fill { height: 100%; background: #f59e0b; animation: load 3s forwards; }
 
-        /* --- UI DESIGN --- */
-        .plate-base { width: 260px; height: 260px; background: radial-gradient(circle, #1c1c1e 0%, #000 100%); border: 6px solid #2c2c2e; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; transition: transform 0.05s; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
+        .plate-base { 
+            width: 250px; height: 250px; background: radial-gradient(circle, #1c1c1e 0%, #000 100%); 
+            border: 5px solid #2c2c2e; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            position: relative; transition: transform 0.05s; margin: auto;
+        }
         .plate-base:active { transform: scale(0.95); }
-        .glow-effect { position: absolute; width: 350px; height: 350px; background: radial-gradient(circle, rgba(245,158,11,0.15) 0%, rgba(0,0,0,0) 70%); pointer-events: none; }
-        
-        .tab-content { display: none; height: 75vh; overflow-y: auto; padding-bottom: 120px; }
-        .active { display: block
-        
+        .tab-content { display: none; height: 80vh; overflow-y: auto; padding-bottom: 100px; }
+        .active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <h1 class="text-3xl font-black text-yellow-500 mb-4">GARBA TYCOON</h1>
+        <div class="w-48 h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div class="bar-fill"></div>
+        </div>
+        <p class="text-gray-500 text-xs mt-4">Chargement instantané...</p>
+    </div>
+
+    <div class="p-4 max-w-md mx-auto h-screen flex flex-col">
+        <div class="flex justify-between items-center bg-[#1c1c1e] p-3 rounded-2xl border border-[#3a3a3c]">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center font-bold text-black text-xs">G</div>
+                <div>
+                    <p class="text-[9px] text-gray-400">Profit / h</p>
+                    <p id="profit-rate" class="text-green-500 font-bold text-xs">+0</p>
+                </div>
+            </div>
+            <button class="bg-[#2ecc71] text-white text-[10px] font-bold py-2 px-4 rounded-full">Connect Wallet</button>
+        </div>
+
+        <div class="text-center my-6">
+            <h2 id="balance" class="text-5xl font-black">0</h2>
+            <p id="level-display" class="text-yellow-500 text-[10px] font-bold mt-2 uppercase">Niveau 1</p>
+        </div>
+
+        <div id="exchange" class="tab-content active flex flex-col">
+            <div class="plate-base" onclick="handleTap(event)">
+                <img src="1770136311457.png" alt="Garba" class="w-4/5 h-4/5 object-contain animate-bounce-custom" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1046/1046788.png'">
+            </div>
+            
+            <div class="mt-8 flex flex-col items-center">
+                <div class="text-yellow-500 font-bold mb-1 text-sm">⚡ <span id="energy-text">1000 / 1000</span></div>
+                <div class="w-48 h-2 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                    <div id="energy-fill" class="h-full bg-yellow-500" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-around w-full mt-10">
+                <a href="https://t.me/garbatycoon" target="_blank" class="flex flex-col items-center">
+                    <div class="w-12 h-12 rounded-full border border-blue-500 flex items-center justify-center bg-black/40 text-xl">📢</div>
+                    <span class="text-[8px] mt-1 text-gray-500 font-bold">CANAL</span>
+                </a>
+            </div>
+        </div>
+
+        <nav class="fixed bottom-0 left-0 right-0 bg-[#0b0b0d] border-t border-[#2c2c2e] p-5 flex justify-around">
+            <button onclick="showTab('exchange')" class="flex flex-col items-center text-yellow-500">🏠<span class="text-[9px]">Jeu</span></button>
+            <button onclick="showTab('mine')" class="flex flex-col items-center text-gray-500">⛏️<span class="text-[9px]">Mine</span></button>
+            <button onclick="showTab('friends')" class="flex flex-col items-center text-gray-500">👥<span class="text-[9px]">Amis</span></button>
+        </nav>
+    </div>
+
+    <script>
+        // SECURITÉ : On enlève le splash screen après 3 secondes quoi qu'il arrive
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            if (splash) splash.classList.add('fade-out');
+        }, 3000);
+
+        let balance = parseFloat(localStorage.getItem('g_bal')) || 0;
+        let energy = 1000;
+        let profit = 0;
+
+        function updateUI() {
+            document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
+            document.getElementById('energy-text').innerText = Math.floor(energy) + " / 1000";
+            document.getElementById('energy-fill').style.width = (energy / 10) + "%";
+            localStorage.setItem('g_bal', balance);
+        }
+
+        function handleTap(e) {
+            if (energy >= 1) {
+                balance += 1;
+                energy -= 1;
+                updateUI();
+                if (navigator.vibrate) navigator.vibrate(40);
+            }
+        }
+
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        setInterval(() => {
+            if (energy < 1000) energy = Math.min(1000, energy + 2);
+            updateUI();
+        }, 1000);
+
+        updateUI();
+    </script>
+</body>
+                        </html>
+                        
