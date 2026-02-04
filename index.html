@@ -8,15 +8,15 @@
     <style>
         :root {
             --primary-gold: #f3ba2f;
-            --bg-dark: #0a192f;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --bg-dark: #06142e;
+            --wallet-green: #1e4d3a;
         }
 
         body { 
             margin: 0; 
             background: var(--bg-dark); 
             color: white; 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             overflow: hidden;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -27,182 +27,145 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: radial-gradient(circle at center, #112240 0%, #0a192f 100%);
+            justify-content: space-between;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        /* Top Bar & Wallet */
-        .top-bar {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
-
         .connect-wallet {
-            background: #1e4d3a;
+            background: var(--wallet-green);
             color: #4ade80;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 20px;
             font-weight: bold;
-            font-size: 0.9rem;
             border: none;
-            cursor: pointer;
         }
 
-        /* Points Display */
-        .points-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .points-container { text-align: center; }
+        .points-label { color: var(--primary-gold); font-weight: bold; font-size: 1.1rem; margin: 0; }
+        .points-value { font-size: 3.5rem; font-weight: 900; margin: 5px 0; }
+        .passive-income { color: #4ade80; font-size: 0.9rem; font-weight: bold; }
 
-        .points-label {
-            color: var(--primary-gold);
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .points-value {
-            font-size: 3.5rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
-
-        /* Main Clicker */
         .clicker-area {
             position: relative;
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
         }
 
-        .garba-main {
-            width: 85%;
+        .garba-img {
+            width: 80%;
             max-width: 350px;
             filter: drop-shadow(0 0 30px rgba(243, 186, 47, 0.3));
-            transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+            transition: transform 0.05s;
             z-index: 5;
+            cursor: pointer;
         }
 
-        .garba-main:active {
-            transform: scale(0.92);
-        }
+        .garba-img:active { transform: scale(0.92); }
 
-        /* Floating Animation */
         .tap-pop {
             position: absolute;
             color: white;
             font-size: 2.5rem;
             font-weight: 900;
-            pointer-events: none;
             animation: floatPop 0.7s ease-out forwards;
+            pointer-events: none;
             z-index: 10;
         }
 
         @keyframes floatPop {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-150px) scale(1.2); }
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-150px); }
         }
 
-        /* Bottom Menu */
         .bottom-nav {
             width: 100%;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            display: flex;
+            justify-content: space-around;
             padding-bottom: 20px;
         }
 
         .nav-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            aspect-ratio: 1/1;
+            border: 1px solid rgba(255,255,255,0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             font-size: 0.6rem;
-            text-align: center;
             color: #8892b0;
-            padding: 5px;
+            background: rgba(255,255,255,0.02);
         }
 
-        .nav-icon { font-size: 1.5rem; margin-bottom: 4px; }
-        .nav-item.active { border-color: var(--primary-gold); color: white; }
-
+        .nav-item.active { border: 2px solid var(--primary-gold); color: white; }
     </style>
 </head>
 <body>
     <div class="app">
-        <div class="top-bar">
-            <button class="connect-wallet">Connect Wallet</button>
-        </div>
+        <button class="connect-wallet">Connect Wallet</button>
 
         <div class="points-container">
-            <div class="points-label">Points:</div>
-            <div class="points-value" id="score">0</div>
+            <p class="points-label">Points:</p>
+            <h1 class="points-value" id="score">0</h1>
+            <p class="passive-income">+1 / sec</p>
         </div>
         
         <div class="clicker-area" id="tapZone">
-            <img src="Garba.png" class="garba-main" id="garbaImg">
+            <img src="1770136311457.png" class="garba-img" id="garbaImg">
         </div>
 
         <div class="bottom-nav">
-            <div class="nav-item">
-                <span class="nav-icon">🌶️</span>
-                <span>BOOSTS</span>
-            </div>
-            <div class="nav-item active">
-                <span class="nav-icon">🪙</span>
-                <span>EARN TON</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">👥</span>
-                <span>INVITE FRIENDS</span>
-            </div>
+            <div class="nav-item"><span>🌶️</span><span>BOOSTS</span></div>
+            <div class="nav-item active"><span>💰</span><span>EARN TON</span></div>
+            <div class="nav-item"><span>👥</span><span>INVITE</span></div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        let score = parseInt(localStorage.getItem('garba_score')) || 0;
+        let score = parseFloat(localStorage.getItem('g_score')) || 0;
         const scoreEl = document.getElementById('score');
         const tapZone = document.getElementById('tapZone');
 
         tg.expand();
-        scoreEl.innerText = score.toLocaleString();
 
+        // 1. Fonction pour mettre à jour l'affichage
+        function updateDisplay() {
+            scoreEl.innerText = Math.floor(score).toLocaleString();
+        }
+
+        // 2. REVENU PASSIF (1 par seconde)
+        setInterval(() => {
+            score += 1;
+            updateDisplay();
+            localStorage.setItem('g_score', score);
+        }, 1000);
+
+        // 3. CLIC MANUEL
         tapZone.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Empêche le zoom sur mobile
-            
-            // Vibration
+            e.preventDefault();
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
-            // Mise à jour Score
             score += 1;
-            scoreEl.innerText = score.toLocaleString();
-            localStorage.setItem('garba_score', score);
+            updateDisplay();
+            localStorage.setItem('g_score', score);
 
-            // Animation +1
             const touch = e.touches[0];
-            createPop(touch.clientX, touch.clientY);
+            const pop = document.createElement('div');
+            pop.className = 'tap-pop';
+            pop.innerText = '+1';
+            pop.style.left = `${touch.clientX - 20}px`;
+            pop.style.top = `${touch.clientY - 50}px`;
+            document.body.appendChild(pop);
+            setTimeout(() => pop.remove(), 700);
         });
 
-        function createPop(x, y) {
-            const el = document.createElement('div');
-            el.className = 'tap-pop';
-            el.innerText = '+1';
-            el.style.left = `${x - 20}px`;
-            el.style.top = `${y - 50}px`;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 700);
-        }
+        updateDisplay();
     </script>
 </body>
 </html>
