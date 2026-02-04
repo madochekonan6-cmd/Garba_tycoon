@@ -3,172 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon Pro - Énergie & Cercle</title>
+    <title>Garba Tycoon Pro - 2.5D Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { user-select: none; background: #0b0b0d; color: #fff; font-family: sans-serif; overflow: hidden; }
+        body { user-select: none; background: #0b0b0d; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; margin: 0; }
         
-        /* CERCLE JAUNE LUMINEUX */
-        .outer-circle {
-            position: relative; width: 280px; height: 280px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            background: rgba(245, 158, 11, 0.05);
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
-        }
-        .yellow-ring {
-            position: absolute; inset: 0; border-radius: 50%;
-            border: 4px solid #f59e0b;
-            box-shadow: 0 0 15px #f59e0b, inset 0 0 15px #f59e0b;
-            animation: pulse 2s infinite;
+        /* --- EFFET 2.5D ET CERCLE NEON --- */
+        .main-container {
+            position: relative; width: 300px; height: 300px;
+            display: flex; align-items: center; justify-content: center;
+            perspective: 1000px; /* Donne l'effet de profondeur */
         }
 
-        /* L'ATTIÉKÉ */
-        .plate-base {
-            width: 220px; height: 220px; z-index: 10;
-            transition: transform 0.05s; cursor: pointer;
-        }
-        .plate-base:active { transform: scale(0.92); }
-
-        /* ÉNERGIE */
-        .energy-bar-bg { width: 200px; height: 10px; background: #1c1c1e; border-radius: 10px; border: 1px solid #333; overflow: hidden; }
-        #energy-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); transition: width 0.2s; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.02); }
-        }
-
-        .tab-content { display: none; height: 70vh; overflow-y: auto; padding-bottom: 100px; }
-        .active { display: block; }
-        .float-text { position: absolute; color: #f59e0b; font-weight: 900; font-size: 30px; pointer-events: none; animation: floatUp 0.6s forwards; z-index: 50; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-80px); } }
-    </style>
-</head>
-<body>
-
-    <div class="p-4 max-w-md mx-auto h-screen flex flex-col items-center">
-        
-        <div class="w-full flex justify-between items-center mb-6">
-            <div class="bg-[#1c1c1e] px-4 py-2 rounded-full border border-cyan-900/50">
-                <span class="text-cyan-400 text-[10px] font-bold uppercase">Niveau 1: Apprenti</span>
-            </div>
-            <button class="bg-cyan-600/20 text-cyan-400 border border-cyan-600 px-4 py-1 rounded-lg text-xs font-bold">Wallet</button>
-        </div>
-
-        <div class="text-center mb-2">
-            <h2 id="balance" class="text-6xl font-black text-orange-500">0</h2>
-            <p class="text-cyan-400 text-xs mt-2 font-medium italic">Revenu passif: +0/h</p>
-        </div>
-
-        <div id="exchange" class="tab-content active flex flex-col items-center justify-center">
-            <div class="outer-circle my-8">
-                <div class="yellow-ring"></div>
-                <div class="plate-base" onclick="handleTap(event)">
-                    <img src="1770136311457.png" class="w-full h-full object-contain">
-                </div>
-            </div>
-
-            <div class="flex flex-col items-center mt-4">
-                <div class="flex items-center gap-2 text-yellow-500 font-black text-lg mb-2">
-                    <span>⚡</span> <span id="energy-text">1000 / 1000</span>
-                </div>
-                <div class="energy-bar-bg">
-                    <div id="energy-fill" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="mine" class="tab-content w-full px-2">
-            <p class="text-gray-500 text-[10px] uppercase font-bold mb-4 text-center">Cartes d'investissement</p>
-            <div id="cards-container" class="grid grid-cols-2 gap-3"></div>
-        </div>
-
-        <nav class="fixed bottom-6 left-4 right-4 bg-[#111] border border-[#333] rounded-2xl p-4 flex justify-around items-center">
-            <button onclick="showTab('exchange')" class="flex flex-col items-center text-orange-500">
-                <span class="text-xl">🏠</span><span class="text-[10px] font-bold">Exchange</span>
-            </button>
-            <button onclick="showTab('mine')" class="flex flex-col items-center text-gray-500">
-                <span class="text-xl">⛏️</span><span class="text-[10px] font-bold">Mine</span>
-            </button>
-            <button onclick="showTab('friends')" class="flex flex-col items-center text-gray-500">
-                <span class="text-xl">👥</span><span class="text-[10px] font-bold">Friends</span>
-            </button>
-        </nav>
-    </div>
-
-    <script>
-        let state = JSON.parse(localStorage.getItem('garba_v3')) || {
-            bal: 0, energy: 1000, maxEnergy: 1000, profit: 0,
-            cards: [
-                { id: 1, name: "Recruter Tantie", price: 2000, profit: 200, lvl: 0, img: "👩‍🍳" },
-                { id: 2, name: "Pub TV (Ad)", price: 5000, profit: 1000, lvl: 0, img: "📺" }
-            ]
-        };
-
-        function save() { localStorage.setItem('garba_v3', JSON.stringify(state)); }
-
-        function handleTap(e) {
-            if (state.energy >= 1) {
-                state.bal += 1;
-                state.energy -= 1;
-                updateUI();
-                spawnFloatText(e);
-                if (navigator.vibrate) navigator.vibrate(40);
-                save();
-            }
-        }
-
-        function spawnFloatText(e) {
-            const f = document.createElement('div');
-            f.className = 'float-text'; f.innerText = '+1';
-            f.style.left = `${e.clientX - 10}px`; f.style.top = `${e.clientY - 20}px`;
-            document.body.appendChild(f);
-            setTimeout(() => f.remove(), 600);
-        }
-
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = state.cards.map(c => `
-                <div onclick="buyCard(${c.id})" class="bg-[#1c1c1e] p-4 rounded-xl border border-gray-800 flex flex-col items-center">
-                    <span class="text-2xl">${c.img}</span>
-                    <h4 class="text-[10px] font-bold mt-2 text-cyan-400">${c.name}</h4>
-                    <p class="text-[9px] text-green-500">+${c.profit} pts/h</p>
-                    <button class="w-full bg-orange-500 text-black font-black text-[10px] py-2 mt-3 rounded-lg uppercase">Prix: ${c.price / 1000}k</button>
-                </div>
-            `).join('');
-        }
-
-        function buyCard(id) {
-            const c = state.cards.find(x => x.id === id);
-            if(state.bal >= c.price) {
-                state.bal -= c.price;
-                c.lvl++;
-                state.profit += c.profit;
-                c.price = Math.floor(c.price * 1.8);
-                updateUI(); renderCards(); save();
-            } else { alert("Pas assez de points !"); }
-        }
-
-        function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'mine') renderCards();
-        }
-
-        function updateUI() {
-            document.getElementById('balance').innerText = Math.floor(state.bal).toLocaleString();
-            document.getElementById('energy-text').innerText = `${Math.floor(state.energy)} / ${state.maxEnergy}`;
-            document.getElementById('energy-fill').style.width = (state.energy / state.maxEnergy * 100) + "%";
-        }
-
-        // RECHARGE ÉNERGIE + REVENU PASSIF
-        setInterval(() => {
-            state.bal += (state.profit / 3600);
-            if (state.energy < state.maxEnergy) state.energy = Math.min(state.maxEnergy, state.energy + 1.5);
-            updateUI(); save();
-        }, 1000);
-
-        updateUI();
-    </script>
-</body>
-</html>
+        .neon-ring {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; border: 6px solid rgba(245, 158, 11, 0
+                                                       
