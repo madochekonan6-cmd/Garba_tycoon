@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon</title>
+    <title>Garba Tycoon Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -13,138 +13,138 @@
         }
 
         body { 
-            margin: 0; 
-            background: var(--bg-dark); 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            margin: 0; background: var(--bg-dark); color: white; 
+            font-family: 'Segoe UI', sans-serif; overflow: hidden;
+            user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
         .app {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            box-sizing: border-box;
+            height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: space-between; padding: 20px;
         }
 
-        .connect-wallet {
-            background: var(--wallet-green);
-            color: #4ade80;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            border: none;
-        }
+        /* Stats */
+        .points-container { text-align: center; margin-top: 10px; }
+        .points-value { font-size: 3.5rem; font-weight: 900; margin: 0; color: white; }
+        .level-badge { color: var(--primary-gold); font-weight: bold; font-size: 1rem; }
+        .income-info { color: #4ade80; font-size: 0.9rem; margin-top: 5px; }
 
-        .points-container { text-align: center; }
-        .points-label { color: var(--primary-gold); font-weight: bold; font-size: 1.1rem; margin: 0; }
-        .points-value { font-size: 3.5rem; font-weight: 900; margin: 5px 0; }
-        .passive-income { color: #4ade80; font-size: 0.9rem; font-weight: bold; }
-
+        /* IMAGE EN ROND */
         .clicker-area {
-            position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
+            position: relative; width: 100%; display: flex;
+            justify-content: center; align-items: center; flex-grow: 1;
         }
+
+        .circle-container {
+            width: 280px; height: 280px;
+            border-radius: 50%; /* REND L'IMAGE RONDE */
+            border: 5px solid var(--primary-gold);
+            overflow: hidden; /* COUPE LES BORDS */
+            box-shadow: 0 0 30px rgba(243, 186, 47, 0.4);
+            background: #000;
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.05s;
+        }
+
+        .circle-container:active { transform: scale(0.92); }
 
         .garba-img {
-            width: 80%;
-            max-width: 350px;
-            filter: drop-shadow(0 0 30px rgba(243, 186, 47, 0.3));
-            transition: transform 0.05s;
-            z-index: 5;
-            cursor: pointer;
+            width: 100%; height: 100%;
+            object-fit: cover; /* REMPLIT LE ROND SANS DÉFORMER */
         }
 
-        .garba-img:active { transform: scale(0.92); }
-
+        /* Animations */
         .tap-pop {
-            position: absolute;
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 900;
-            animation: floatPop 0.7s ease-out forwards;
-            pointer-events: none;
-            z-index: 10;
+            position: absolute; color: white; font-size: 2.5rem;
+            font-weight: 900; animation: floatPop 0.7s forwards; pointer-events: none;
         }
-
         @keyframes floatPop {
             0% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-150px); }
         }
 
-        .bottom-nav {
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding-bottom: 20px;
+        /* Upgrade Button */
+        .upgrade-section { width: 100%; margin-bottom: 20px; text-align: center; }
+        .upgrade-btn {
+            background: var(--primary-gold); color: black;
+            padding: 12px 25px; border-radius: 12px; font-weight: bold;
+            border: none; cursor: pointer; box-shadow: 0 4px #b37700;
         }
+        .upgrade-btn:active { transform: translateY(2px); box-shadow: 0 2px #b37700; }
 
-        .nav-item {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            color: #8892b0;
-            background: rgba(255,255,255,0.02);
-        }
-
-        .nav-item.active { border: 2px solid var(--primary-gold); color: white; }
+        .bottom-nav { width: 100%; display: flex; justify-content: space-around; padding-bottom: 10px; }
+        .nav-item { font-size: 0.7rem; text-align: center; opacity: 0.6; }
     </style>
 </head>
 <body>
     <div class="app">
-        <button class="connect-wallet">Connect Wallet</button>
-
         <div class="points-container">
-            <p class="points-label">Points:</p>
+            <div class="level-badge" id="levelName">Niveau 1: Apprenti</div>
             <h1 class="points-value" id="score">0</h1>
-            <p class="passive-income">+1 / sec</p>
+            <div class="income-info" id="incomeText">+0 / sec</div>
         </div>
         
         <div class="clicker-area" id="tapZone">
-            <img src="1770136311457.png" class="garba-img" id="garbaImg">
+            <div class="circle-container">
+                <img src="1770136311457.png" class="garba-img">
+            </div>
+        </div>
+
+        <div class="upgrade-section">
+            <button class="upgrade-btn" id="upgradeBtn">UPGRADE (Coût: 50)</button>
         </div>
 
         <div class="bottom-nav">
-            <div class="nav-item"><span>🌶️</span><span>BOOSTS</span></div>
-            <div class="nav-item active"><span>💰</span><span>EARN TON</span></div>
-            <div class="nav-item"><span>👥</span><span>INVITE</span></div>
+            <div class="nav-item">🌶️<br>BOOSTS</div>
+            <div class="nav-item" style="opacity: 1; color:var(--primary-gold)">💰<br>EARN</div>
+            <div class="nav-item">👥<br>INVITE</div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        let score = parseFloat(localStorage.getItem('g_score')) || 0;
+        let score = parseInt(localStorage.getItem('g_score')) || 0;
+        let level = parseInt(localStorage.getItem('g_level')) || 1;
+        
         const scoreEl = document.getElementById('score');
+        const incomeEl = document.getElementById('incomeText');
+        const levelEl = document.getElementById('levelName');
+        const upgradeBtn = document.getElementById('upgradeBtn');
         const tapZone = document.getElementById('tapZone');
 
         tg.expand();
 
-        // 1. Fonction pour mettre à jour l'affichage
-        function updateDisplay() {
+        function updateUI() {
             scoreEl.innerText = Math.floor(score).toLocaleString();
+            let autoGain = (level - 1) * 2; // Niveau 1 = 0, Niveau 2 = 2, Niveau 3 = 4...
+            incomeEl.innerText = "+" + autoGain + " / sec";
+            levelEl.innerText = "Niveau " + level;
+            upgradeBtn.innerText = "UPGRADE NIVEAU " + (level + 1) + " (Coût: " + (level * 100) + ")";
         }
 
-        // 2. REVENU PASSIF (1 par seconde)
+        // 1. REVENU PASSIF (Seulement si niveau > 1)
         setInterval(() => {
-            score += 1;
-            updateDisplay();
-            localStorage.setItem('g_score', score);
+            if (level > 1) {
+                score += (level - 1) * 2; 
+                updateUI();
+                localStorage.setItem('g_score', score);
+            }
         }, 1000);
+
+        // 2. BOUTON UPGRADE
+        upgradeBtn.addEventListener('click', () => {
+            let cost = level * 100;
+            if (score >= cost) {
+                score -= cost;
+                level += 1;
+                localStorage.setItem('g_level', level);
+                localStorage.setItem('g_score', score);
+                updateUI();
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                alert("Pas assez de points !");
+            }
+        });
 
         // 3. CLIC MANUEL
         tapZone.addEventListener('touchstart', (e) => {
@@ -152,7 +152,7 @@
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
             score += 1;
-            updateDisplay();
+            updateUI();
             localStorage.setItem('g_score', score);
 
             const touch = e.touches[0];
@@ -165,7 +165,7 @@
             setTimeout(() => pop.remove(), 700);
         });
 
-        updateDisplay();
+        updateUI();
     </script>
 </body>
 </html>
