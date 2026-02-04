@@ -6,65 +6,105 @@
     <title>Garba Tycoon Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { user-select: none; -webkit-tap-highlight-color: transparent; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
-        .tab-content { display: none; height: 80vh; overflow-y: auto; padding-bottom: 100px; }
-        .active { display: block; }
+        body { user-select: none; -webkit-tap-highlight-color: transparent; background: #0b0b0d; color: #fff; font-family: 'sans-serif'; overflow: hidden; }
         
-        /* BOUTON PRINCIPAL BIEN ROND */
-        .circle-btn {
+        /* Halo lumineux derrière le plat */
+        .glow-effect {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Le socle (le rond sur lequel le plat est posé) */
+        .plate-base {
             width: 280px;
             height: 280px;
+            background: radial-gradient(circle, #1a1a1c 0%, #000 100%);
+            border: 4px solid #2c2c2e;
             border-radius: 50%;
-            background: radial-gradient(circle, #f59e0b 0%, #78350f 100%);
-            border: 8px solid #3d1a07;
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px auto;
-            cursor: pointer;
+            position: relative;
+            z-index: 10;
             transition: transform 0.05s;
         }
-        .circle-btn:active { transform: scale(0.92); }
-        .circle-btn img { width: 80%; height: 80%; object-fit: contain; }
+        .plate-base:active { transform: scale(0.95); }
 
-        .card { background: #1c1c1e; border: 1px solid #3a3a3c; border-radius: 16px; padding: 12px; }
-        .nav-btn.active { color: #f59e0b; border-top: 2px solid #f59e0b; }
+        /* Animation du chiffre qui monte (+1, +2...) */
+        .float-text {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            z-index: 50;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-100px); }
+        }
+
+        .tab-content { display: none; height: 70vh; overflow-y: auto; padding-bottom: 100px; }
+        .active { display: block; }
     </style>
 </head>
 <body>
-    <div class="p-4 max-w-md mx-auto">
-        <div class="flex justify-between items-center mb-6 bg-[#1c1c1e] p-3 rounded-2xl border border-[#3a3a3c]">
-            <div>
-                <p id="level-name" class="text-[10px] text-gray-400">Niveau 1</p>
-                <p class="text-xs font-bold text-white">Apprenti</p>
-            </div>
-            <div class="text-right">
-                <p class="text-[10px] text-gray-400">Gain par heure</p>
-                <p id="profit-rate" class="text-green-500 font-bold text-sm">+0 💰</p>
-            </div>
+    <div class="p-4 max-w-md mx-auto h-screen flex flex-col">
+        <div class="flex justify-center mb-4">
+            <button class="bg-[#2ecc71] text-white text-xs font-bold py-2 px-6 rounded-full">Connect Wallet</button>
         </div>
 
-        <div class="text-center my-6">
+        <div class="text-center mt-4">
+            <p class="text-gray-400 text-sm">Points:</p>
             <h2 id="balance" class="text-5xl font-black text-white">0</h2>
+            <p id="level-display" class="text-yellow-500 font-bold mt-1">Niveau 1</p>
         </div>
 
-        <div id="exchange" class="tab-content active text-center">
-            <div class="circle-btn" onclick="handleTap(event)">
-                <img src="1770136311457.png" alt="Garba">
+        <div id="exchange" class="tab-content active flex flex-col items-center justify-center relative">
+            <div class="glow-effect"></div>
+            <div class="plate-base" onclick="handleTap(event)">
+                <img src="1770136311457.png" alt="Garba" class="w-4/5 h-4/5 object-contain">
+            </div>
+
+            <div class="flex justify-around w-full mt-8">
+                <div class="flex flex-col items-center">
+                    <div class="w-14 h-14 rounded-full border-2 border-cyan-400 flex items-center justify-center bg-black/40">⚡</div>
+                    <span class="text-[10px] mt-1">BOOSTS</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-14 h-14 rounded-full border-2 border-yellow-500 flex items-center justify-center bg-black/40">💰</div>
+                    <span class="text-[10px] mt-1">EARN TON</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-14 h-14 rounded-full border-2 border-white flex items-center justify-center bg-black/40">👥</div>
+                    <span class="text-[10px] mt-1">FRIENDS</span>
+                </div>
             </div>
         </div>
 
-        <div id="mine" class="tab-content">
+        <div id="mine" class="tab-content mt-4">
+            <h3 class="text-xl font-bold mb-4">Améliorer le restaurant</h3>
+            <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+                <button class="bg-[#2c2c2e] px-4 py-2 rounded-lg text-xs whitespace-nowrap border-b-2 border-yellow-500">Matériel</button>
+                <button class="bg-[#2c2c2e] px-4 py-2 rounded-lg text-xs whitespace-nowrap text-gray-400">Ingrédients</button>
+                <button class="bg-[#2c2c2e] px-4 py-2 rounded-lg text-xs whitespace-nowrap text-gray-400">Personnel</button>
+            </div>
+            
             <div id="cards-container" class="grid grid-cols-2 gap-3">
                 </div>
         </div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-[#333] p-4 flex justify-around z-50">
-            <button onclick="showTab('exchange')" class="nav-btn active flex flex-col items-center">
+        <div class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-[#333] p-4 flex justify-around">
+            <button onclick="showTab('exchange')" class="flex flex-col items-center text-yellow-500">
                 <span class="text-xl">🏠</span><span class="text-[10px]">Exchange</span>
             </button>
-            <button onclick="showTab('mine')" class="nav-btn flex flex-col items-center text-gray-500">
+            <button onclick="showTab('mine')" class="flex flex-col items-center text-gray-500">
                 <span class="text-xl">⛏️</span><span class="text-[10px]">Mine</span>
             </button>
         </div>
@@ -72,10 +112,65 @@
 
     <script>
         let balance = 0;
-        let profitPerHour = 0;
+        let level = 1;
 
-        // Tes images réelles de GitHub
-        const cardsData = [
-            { n: "Fourneau", img: "0fc2a7300d0d0d31...", p: 200, r: 10 },
-            { n: "Att
-        
+        function handleTap(e) {
+            // Calcul du gain selon niveau
+            balance += level;
+            document.getElementById('balance').innerText = balance.toLocaleString();
+
+            // Vibration (uniquement sur mobile réel)
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            // Création du texte flottant (+1, +2...)
+            const float = document.createElement('div');
+            float.className = 'float-text';
+            float.innerText = `+${level}`;
+            float.style.left = `${e.clientX - 20}px`;
+            float.style.top = `${e.clientY - 20}px`;
+            document.body.appendChild(float);
+
+            setTimeout(() => float.remove(), 800);
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            // Logique de rendu des cartes si on est dans Mine
+            if(tabId === 'mine') renderCards();
+        }
+
+        const cards = [
+            { name: "Nouveau Fourneau", price: 100, upgradeTo: 2, icon: "🔥" },
+            { name: "Poisson Frais", price: 500, upgradeTo: 3, icon: "🐟" },
+            { name: "Vendeuse Pro", price: 2000, upgradeTo: 4, icon: "👩" }
+        ];
+
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = cards.map(card => `
+                <div class="bg-[#1c1c1e] p-4 rounded-2xl border border-[#3a3a3c]" onclick="buyUpgrade(${card.price}, ${card.upgradeTo})">
+                    <div class="text-3xl mb-2">${card.icon}</div>
+                    <p class="font-bold text-sm">${card.name}</p>
+                    <p class="text-xs text-gray-400">Vers Niveau ${card.upgradeTo}</p>
+                    <p class="text-yellow-500 font-bold mt-2">${card.price} 💰</p>
+                </div>
+            `).join('');
+        }
+
+        function buyUpgrade(price, nextLevel) {
+            if (balance >= price) {
+                balance -= price;
+                level = nextLevel;
+                document.getElementById('balance').innerText = balance.toLocaleString();
+                document.getElementById('level-display').innerText = `Niveau ${level}`;
+                alert("Niveau augmenté ! Tu gagnes maintenant +" + level + " par clic.");
+            } else {
+                alert("Pas assez de points ! Continue de cliquer sur le Garba.");
+            }
+        }
+    </script>
+</body>
+    </html>
+    
