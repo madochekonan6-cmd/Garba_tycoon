@@ -3,224 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon Pro</title>
+    <title>Garba Tycoon Pro - Officiel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { user-select: none; -webkit-tap-highlight-color: transparent; background: #0b0b0d; color: #fff; font-family: sans-serif; overflow: hidden; }
         
         /* --- SPLASH SCREEN --- */
-        #splash-screen {
-            position: fixed; inset: 0; z-index: 100; background: #0b0b0d;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s ease-out;
-        }
+        #splash-screen { position: fixed; inset: 0; z-index: 100; background: #0b0b0d; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s; }
         .fade-out { opacity: 0; pointer-events: none; }
         
         /* --- ANIMATIONS --- */
         @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
         @keyframes loading-bar { 0% { width: 0%; } 100% { width: 100%; } }
-        .animate-loading-bar { animation: loading-bar 3s linear forwards; }
+        .animate-loading-bar { animation: loading-bar 3.5s linear forwards; }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
-        .float-text { position: absolute; color: white; font-weight: 900; font-size: 32px; pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 100; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .float-text { position: absolute; color: white; font-weight: 900; font-size: 32px; pointer-events: none; animation: floatUp 0.7s forwards; z-index: 100; }
 
-        /* --- UI ELEMENTS --- */
-        .plate-base {
-            width: 270px; height: 270px; background: radial-gradient(circle, #1c1c1e 0%, #000 100%);
-            border: 6px solid #2c2c2e; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            position: relative; z-index: 10; transition: transform 0.05s;
-        }
+        /* --- UI DESIGN --- */
+        .plate-base { width: 260px; height: 260px; background: radial-gradient(circle, #1c1c1e 0%, #000 100%); border: 6px solid #2c2c2e; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; transition: transform 0.05s; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
         .plate-base:active { transform: scale(0.95); }
-        .glow-effect { position: absolute; width: 350px; height: 350px; background: radial-gradient(circle, rgba(245,158,11,0.2) 0%, rgba(0,0,0,0) 70%); pointer-events: none; }
+        .glow-effect { position: absolute; width: 350px; height: 350px; background: radial-gradient(circle, rgba(245,158,11,0.15) 0%, rgba(0,0,0,0) 70%); pointer-events: none; }
         
-        .tab-content { display: none; height: 78vh; overflow-y: auto; padding-bottom: 120px; }
-        .active { display: block; }
-        .mine-tab.active-tab { background: #2c2c2e; color: #f59e0b; border: 1px solid #3a3a3c; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
-</head>
-<body>
-
-    <div id="splash-screen">
-        <div class="relative">
-            <div class="absolute inset-0 bg-yellow-600 blur-3xl opacity-20 animate-pulse"></div>
-            <img src="1770136311457.png" class="w-64 h-64 object-contain relative z-10 animate-bounce-slow">
-        </div>
-        <h1 class="text-3xl font-black mt-8 tracking-tighter">GARBA TYCOON PRO</h1>
-        <div class="mt-10 w-48 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-            <div class="h-full bg-yellow-500 animate-loading-bar"></div>
-        </div>
-        <p class="text-gray-500 text-[10px] mt-4 uppercase tracking-[0.2em]">Chargement de la sauce...</p>
-    </div>
-
-    <div class="p-4 max-w-md mx-auto h-screen flex flex-col">
+        .tab-content { display: none; height: 75vh; overflow-y: auto; padding-bottom: 120px; }
+        .active { display: block
         
-        <div class="flex justify-between items-center mb-4 bg-[#1c1c1e] p-3 rounded-2xl border border-[#3a3a3c]">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-xs text-black font-bold">G</div>
-                <div>
-                    <p class="text-[10px] text-gray-400">Profit / h</p>
-                    <p id="profit-rate" class="text-green-500 font-bold text-xs">+0</p>
-                </div>
-            </div>
-            <button class="bg-[#2ecc71] text-white text-[10px] font-bold py-1.5 px-4 rounded-full">Connect Wallet</button>
-        </div>
-
-        <div class="text-center my-4">
-            <h2 id="balance" class="text-5xl font-black tracking-tight">0</h2>
-            <p id="level-display" class="text-yellow-500 text-[10px] font-bold mt-2 uppercase tracking-widest">Niveau 1</p>
-        </div>
-
-        <div id="exchange" class="tab-content active flex flex-col items-center justify-center relative">
-            <div class="glow-effect"></div>
-            <div class="plate-base" onclick="handleTap(event)">
-                <img src="1770136311457.png" class="w-4/5 h-4/5 object-contain">
-            </div>
-
-            <div class="flex justify-around w-full mt-12">
-                <div class="flex flex-col items-center">
-                    <div class="w-14 h-14 rounded-full border-2 border-orange-500 flex items-center justify-center bg-black/40 text-xl">🌶️</div>
-                    <span class="text-[9px] mt-1 font-bold text-gray-500">BOOSTS</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div class="w-14 h-14 rounded-full border-2 border-yellow-500 flex items-center justify-center bg-black/40 text-xl">🪙</div>
-                    <span class="text-[9px] mt-1 font-bold text-gray-500">EARN</span>
-                </div>
-                <div onclick="showTab('friends')" class="flex flex-col items-center cursor-pointer">
-                    <div class="w-14 h-14 rounded-full border-2 border-white flex items-center justify-center bg-black/40 text-xl">👥</div>
-                    <span class="text-[9px] mt-1 font-bold text-gray-500">FRIENDS</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="mine" class="tab-content">
-            <div class="flex gap-1 bg-[#1c1c1e] p-1 rounded-xl mb-4 border border-[#3a3a3c] overflow-x-auto no-scrollbar">
-                <button onclick="filterMine('logistique')" id="btn-logistique" class="mine-tab active-tab flex-1 text-[9px] py-2.5 rounded-lg px-3 uppercase">Logistique</button>
-                <button onclick="filterMine('marketing')" id="btn-marketing" class="mine-tab flex-1 text-[9px] py-2.5 text-gray-400 px-3 uppercase">Marketing</button>
-                <button onclick="filterMine('legal')" id="btn-legal" class="mine-tab flex-1 text-[9px] py-2.5 text-gray-400 px-3 uppercase">Légal</button>
-                <button onclick="filterMine('special')" id="btn-special" class="mine-tab flex-1 text-[9px] py-2.5 text-gray-400 px-3 uppercase">Spécial</button>
-            </div>
-            <div id="cards-container" class="grid grid-cols-2 gap-3"></div>
-        </div>
-
-        <div id="friends" class="tab-content text-center px-4">
-            <h2 class="text-2xl font-black mt-6">Inviter des amis</h2>
-            <p class="text-gray-500 text-sm mt-2">Toi et ton ami recevrez des bonus</p>
-            <div class="bg-[#1c1c1e] p-5 rounded-2xl border border-[#3a3a3c] mt-8">
-                <p class="text-[10px] text-gray-500 text-left mb-2 uppercase font-bold">Ton lien de parrainage</p>
-                <div class="flex gap-2">
-                    <input type="text" id="ref-link" readonly class="bg-black/40 border border-[#333] rounded-lg p-2 text-[10px] flex-1 text-yellow-500">
-                    <button onclick="copyLink()" class="bg-yellow-600 px-4 rounded-lg text-xs font-bold text-black">COPIER</button>
-                </div>
-            </div>
-        </div>
-
-        <nav class="fixed bottom-0 left-0 right-0 bg-[#0b0b0d]/90 backdrop-blur-md border-t border-[#2c2c2e] p-5 flex justify-around">
-            <button onclick="showTab('exchange')" class="nav-btn flex flex-col items-center text-yellow-500">
-                <span class="text-xl">🏠</span><span class="text-[10px] font-bold">Exchange</span>
-            </button>
-            <button onclick="showTab('mine')" class="nav-btn flex flex-col items-center text-gray-500">
-                <span class="text-xl">⛏️</span><span class="text-[10px] font-bold">Mine</span>
-            </button>
-            <button onclick="showTab('friends')" class="nav-btn flex flex-col items-center text-gray-500">
-                <span class="text-xl">👥</span><span class="text-[10px] font-bold">Friends</span>
-            </button>
-        </nav>
-    </div>
-
-    <script>
-        let balance = 0;
-        let profitPerHour = 0;
-        let level = 1;
-        let currentCategory = 'logistique';
-
-        const cards = [
-            { id: 1, cat: 'logistique', name: "Sac de Charbon", price: 200, profit: 15, lvl: 0, img: "🔥" },
-            { id: 2, cat: 'logistique', name: "Glacière Pro", price: 800, profit: 60, lvl: 0, img: "🧊" },
-            { id: 3, cat: 'marketing', name: "Musique Baf", price: 1500, profit: 180, lvl: 0, img: "🔊" },
-            { id: 4, cat: 'marketing', name: "TikTok Promo", price: 5000, profit: 550, lvl: 0, img: "📱" },
-            { id: 5, cat: 'legal', name: "Badge Hygiène", price: 10000, profit: 1200, lvl: 0, img: "🛡️" },
-            { id: 6, cat: 'special', name: "Garba de Star", price: 100000, profit: 15000, lvl: 0, img: "⭐" }
-        ];
-
-        // Splash Screen
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('splash-screen').classList.add('fade-out');
-                setTimeout(() => document.getElementById('splash-screen').remove(), 1000);
-            }, 3500);
-        });
-
-        function handleTap(e) {
-            balance += level;
-            updateUI();
-            const f = document.createElement('div');
-            f.className = 'float-text'; f.innerText = `+${level}`;
-            f.style.left = `${e.clientX - 20}px`; f.style.top = `${e.clientY - 40}px`;
-            document.body.appendChild(f);
-            setTimeout(() => f.remove(), 700);
-            if (navigator.vibrate) navigator.vibrate(40);
-        }
-
-        function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-yellow-500', 'text-gray-500'));
-            event.currentTarget.classList.replace('text-gray-500', 'text-yellow-500');
-            if(id === 'mine') renderCards();
-        }
-
-        function filterMine(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.mine-tab').forEach(b => b.classList.remove('active-tab'));
-            document.getElementById('btn-'+cat).classList.add('active-tab');
-            renderCards();
-        }
-
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = cards.filter(c => c.cat === currentCategory).map(c => `
-                <div onclick="buyCard(${c.id})" class="bg-[#1c1c1e] p-4 rounded-2xl border border-[#3a3a3c]">
-                    <span class="text-3xl">${c.img}</span>
-                    <h4 class="text-[11px] font-bold mt-2">${c.name}</h4>
-                    <p class="text-[9px] text-green-500 font-bold">+${c.profit}/h</p>
-                    <div class="flex justify-between border-t border-[#333] mt-3 pt-2">
-                        <span class="text-[9px] text-gray-500 italic">Lvl ${c.lvl}</span>
-                        <span class="text-[10px] text-yellow-500 font-black">${c.price}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function buyCard(id) {
-            const c = cards.find(x => x.id === id);
-            if(balance >= c.price) {
-                balance -= c.price;
-                c.lvl++;
-                profitPerHour += c.profit;
-                c.price = Math.floor(c.price * 1.6);
-                level = 1 + Math.floor(cards.reduce((a,b) => a + b.lvl, 0) / 4);
-                updateUI(); renderCards();
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
-            document.getElementById('profit-rate').innerText = `+${profitPerHour.toLocaleString()}`;
-            document.getElementById('level-display').innerText = `Niveau ${level}`;
-        }
-
-        // Gain passif
-        setInterval(() => { balance += (profitPerHour/3600); updateUI(); }, 1000);
-
-        // Lien de parrainage
-        document.getElementById('ref-link').value = "https://t.me/GarbaTycoonBot?start=user" + Math.floor(Math.random()*9999);
-        function copyLink() {
-            document.getElementById('ref-link').select();
-            navigator.clipboard.writeText(document.getElementById('ref-link').value);
-            alert("Lien copié !");
-        }
-    </script>
-</body>
-                        </html>
-                        
