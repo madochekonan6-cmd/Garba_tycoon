@@ -1,61 +1,60 @@
-import React, { useState } from 'react';
-import './Garbatycoon.css';
-
-const Garbatycoon = () => {
-  const [points, setPoints] = useState(0);
-  const [clicks, setClicks] = useState([]);
-
-  const handleTap = (e) => {
-    // Augmenter le score
-    setPoints(points + 1);
-
-    // Animation du +1 au point de contact
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const newClick = { id: Date.now(), x, y };
-    setClicks([...clicks, newClick]);
-
-    // Nettoyage de l'animation
-    setTimeout(() => {
-      setClicks((prevClicks) => prevClicks.filter(click => click.id !== newClick.id));
-    }, 800);
-  };
-
-  return (
-    <div className="tycoon-container">
-      <div className="header-stats">
-        <h1 className="game-title">GARBATYCOON</h1>
-        <div className="score-container">
-          <span className="coin-icon">💰</span>
-          <span className="score-value">{points.toLocaleString()}</span>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GarbaTycoon</title>
+    <style>
+        body { margin: 0; background: #1a1a1a; color: white; font-family: sans-serif; overflow: hidden; }
+        .app { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: radial-gradient(circle, #3d2616 0%, #000000 100%); }
+        h1 { color: #ffaa00; margin-top: 20px; font-size: 2.5rem; }
+        #score { font-size: 2.5rem; font-weight: bold; }
+        .click-area { position: relative; width: 300px; height: 300px; cursor: pointer; }
+        .click-area img { width: 100%; transition: transform 0.1s; filter: drop-shadow(0 0 15px rgba(255,170,0,0.4)); }
+        .click-area:active img { transform: scale(0.9); }
+        .plus-one { position: absolute; color: #00ff00; font-size: 2rem; font-weight: 900; animation: float 0.8s forwards; pointer-events: none; }
+        @keyframes float { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        .footer { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px; box-sizing: border-box; }
+        .btn { background: #ffaa00; color: black; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>GARBATYCOON</h1>
+        <div id="score">0</div>
+        
+        <div class="click-area" id="gabbaBtn">
+            <img src="https://img.icons8.com/emoji/256/poultry-leg.png" id="gabbaImg">
         </div>
-      </div>
 
-      <div className="main-clicker-area">
-        <div className="gabba-trigger" onClick={handleTap}>
-          <img src="/assets/gabba-plate.png" alt="Le Garba" className="gabba-img" />
-          
-          {clicks.map((click) => (
-            <span 
-              key={click.id} 
-              className="tap-animation" 
-              style={{ top: click.y, left: click.x }}
-            >
-              +1
-            </span>
-          ))}
+        <div class="footer">
+            <div class="btn">🍟 Menu</div>
+            <div class="btn">📈 Boost</div>
+            <div class="btn">🤝 Amis</div>
         </div>
-      </div>
-
-      <div className="footer-actions">
-        <div className="action-btn">🍟 Menu</div>
-        <div className="action-btn">📈 Améliorer</div>
-        <div className="action-btn">🤝 Inviter</div>
-      </div>
     </div>
-  );
-};
 
-export default Garbatycoon;
+    <script>
+        let points = parseInt(localStorage.getItem('points')) || 0;
+        const scoreEl = document.getElementById('score');
+        const btn = document.getElementById('gabbaBtn');
+        
+        scoreEl.innerText = points.toLocaleString();
+
+        btn.addEventListener('click', (e) => {
+            points++;
+            scoreEl.innerText = points.toLocaleString();
+            localStorage.setItem('points', points);
+
+            // Créer le +1
+            const plus = document.createElement('div');
+            plus.innerText = '+1';
+            plus.className = 'plus-one';
+            plus.style.left = e.offsetX + 'px';
+            plus.style.top = e.offsetY + 'px';
+            btn.appendChild(plus);
+            setTimeout(() => plus.remove(), 800);
+        });
+    </script>
+</body>
+</html>
