@@ -7,137 +7,151 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
+            margin: 0; padding: 0;
+            background-color: #121212;
             color: white;
             font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; height: 100vh; overflow: hidden;
+            user-select: none;
         }
 
-        /* En-tête */
         .header {
-            width: 100%;
-            padding: 10px 0;
-            text-align: center;
-            background: rgba(0,0,0,0.8);
-            border-bottom: 2px solid #f39c12;
+            width: 100%; padding: 15px 0;
+            text-align: center; background: #1a1a1a;
+            border-bottom: 3px solid #f39c12;
         }
 
-        .score-container { font-size: 28px; font-weight: bold; color: #f1c40f; }
+        .score-container { font-size: 38px; font-weight: bold; color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+        #level-text { color: #f39c12; font-weight: bold; margin-top: 5px; }
 
-        /* Zone Clicker */
         .click-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            flex-grow: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            position: relative; width: 100%;
         }
 
-        .garba-img {
-            width: 200px;
-            height: 200px;
+        /* Le cercle orange qui brille */
+        .garba-circle {
+            width: 230px; height: 230px;
             border-radius: 50%;
-            border: 6px solid #f39c12;
+            border: 8px solid #f39c12;
+            box-shadow: 0 0 40px rgba(243, 156, 18, 0.7);
+            overflow: hidden;
+            transition: transform 0.05s;
             cursor: pointer;
-            transition: transform 0.1s;
+            z-index: 2;
         }
 
-        .garba-img:active { transform: scale(0.9); }
+        .garba-circle:active { transform: scale(0.90); }
+        .garba-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* SECTION RÉSEAUX SOCIAUX */
-        .social-links {
-            width: 90%;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: white;
+        /* Animation du +1 qui saute */
+        .floating-text {
+            position: absolute;
+            color: #f1c40f;
+            font-size: 24px;
             font-weight: bold;
-            font-size: 14px;
-            transition: 0.3s;
+            pointer-events: none;
+            animation: floatUp 0.6s ease-out forwards;
+            z-index: 10;
         }
 
-        .btn-telegram { background: #0088cc; }
-        .btn-whatsapp { background: #25d366; }
-        .btn-tiktok { background: #000000; border: 1px solid #ff0050; }
+        @keyframes floatUp {
+            0% { transform: translateY(0) opacity(1); }
+            100% { transform: translateY(-120px) opacity(0); }
+        }
 
-        /* Menu du bas */
-        .bottom-menu {
-            width: 100%;
-            display: flex;
+        .social-box {
+            width: 100%; display: flex; gap: 10px;
+            padding: 10px 0; justify-content: center;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .small-btn {
+            padding: 10px 15px; border-radius: 12px;
+            text-decoration: none; color: white; font-size: 12px; font-weight: bold;
+        }
+
+        .nav-bar {
+            width: 100%; display: flex;
             justify-content: space-around;
-            padding: 15px 0;
-            background: #2c3e50;
+            padding: 15px 0; background: #1a1a1a;
+            border-top: 2px solid #333;
         }
 
-        .menu-item { text-align: center; font-size: 11px; }
+        .nav-item { text-align: center; color: #888; font-size: 12px; }
+        .active-icon { color: #f39c12; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="score-container">💰 <span id="score">804</span></div>
-        <div style="font-size: 12px; color: #aaa;">Niveau 1: Apprenti</div>
+        <div class="score-container">💰 <span id="score">811</span></div>
+        <div id="level-text">Niveau 1: Apprenti</div>
     </div>
 
-    <div class="click-area">
-        <img src="https://i.ibb.co/30a0574/garba-img.jpg" alt="Garba" class="garba-img" id="click-btn">
-        <p>Tape pour gagner !</p>
+    <div class="click-area" id="area">
+        <div class="garba-circle" id="click-btn">
+            <img src="https://i.ibb.co/30a0574/garba-img.jpg" alt="Garba">
+        </div>
     </div>
 
-    <div class="social-links">
-        <div style="text-align: center; font-size: 12px; margin-bottom: 5px; color: #f39c12;">REJOINS LA COMMUNAUTÉ</div>
-        
-        <a href="https://t.me/GarbaTycoon" class="social-btn btn-telegram">
-            📢 Canal Telegram
-        </a>
-        
-        <a href="https://whatsapp.com/channel/0029VbByzLELI8YSRz9oO614" class="social-btn btn-whatsapp">
-            🟢 Chaîne WhatsApp
-        </a>
-
-        <a href="https://www.tiktok.com/@mobile_pc_gamer1" class="social-btn btn-tiktok">
-            🎵 TikTok Officiel
-        </a>
+    <div class="social-box">
+        <a href="https://t.me/GarbaTycoon" class="small-btn" style="background:#0088cc;">Telegram</a>
+        <a href="https://whatsapp.com/channel/0029VbByzLELI8YSRz9oO614" class="small-btn" style="background:#25d366;">WhatsApp</a>
+        <a href="https://www.tiktok.com/@mobile_pc_gamer1" class="small-btn" style="background:#000;">TikTok</a>
     </div>
 
-    <div class="bottom-menu">
-        <div class="menu-item">🏠<br>Accueil</div>
-        <div class="menu-item">🍳<br>Cuisine</div>
-        <div class="menu-item">👥<br>Amis</div>
-        <div class="menu-item">🏆<br>Rangs</div>
+    <div class="nav-bar">
+        <div class="nav-item active-icon">🏠<br>Accueil</div>
+        <div class="nav-item">🍳<br>Cuisine</div>
+        <div class="nav-item">👥<br>Amis</div>
+        <div class="nav-item">🏆<br>Rangs</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let score = 804;
+        let score = 811;
+        let currentLevel = 1;
         const scoreElement = document.getElementById('score');
-        const clickBtn = document.getElementById('click-btn');
+        const levelElement = document.getElementById('level-text');
+        const clickArea = document.getElementById('area');
 
-        clickBtn.addEventListener('click', () => {
-            score += 1;
+        document.getElementById('click-btn').addEventListener('click', (e) => {
+            // Augmenter le score
+            score++;
             scoreElement.innerText = score;
+
+            // Vibration au clic
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+            // Création du +1 qui saute
+            const plusOne = document.createElement('div');
+            plusOne.innerText = '+1';
+            plusOne.className = 'floating-text';
+            // Positionner au niveau du clic
+            plusOne.style.left = (e.clientX - 10) + 'px';
+            plusOne.style.top = (e.clientY - 20) + 'px';
+            clickArea.appendChild(plusOne);
+
+            // Supprimer le texte après l'animation
+            setTimeout(() => { plusOne.remove(); }, 600);
+
+            // Vérifier le passage de niveau (ex: à 1000)
+            if (score >= 1000 && currentLevel === 1) {
+                currentLevel = 2;
+                levelElement.innerText = "Niveau 2: Chef de Stand 👨‍🍳";
+                levelElement.style.color = "#2ecc71";
+                // Grosse vibration pour le niveau
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                alert("BRAVO ! Tu es passé Niveau 2 !");
+            }
         });
     </script>
 </body>
 </html>
+
+            
