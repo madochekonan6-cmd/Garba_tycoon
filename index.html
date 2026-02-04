@@ -8,108 +8,124 @@
     <style>
         body {
             margin: 0; padding: 0;
-            background-color: #0b1622;
-            color: white;
-            font-family: 'Arial', sans-serif;
-            display: flex; flex-direction: column;
-            align-items: center; height: 100vh; overflow: hidden;
-            user-select: none;
+            background: radial-gradient(circle, #0d1b2a 0%, #050a0f 100%);
+            color: white; font-family: 'Arial', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            height: 100vh; overflow: hidden; user-select: none;
         }
 
-        /* En-tête Score */
-        .header {
-            width: 100%; padding: 20px 0;
-            text-align: center;
+        /* Top Bar */
+        .top-bar {
+            width: 90%; display: flex; justify-content: space-between;
+            padding: 15px 0; align-items: center;
         }
-        .score-container { font-size: 45px; font-weight: bold; color: #fbb03b; }
-        .level-badge { background: #152a3d; padding: 5px 15px; border-radius: 20px; font-size: 14px; color: #40E0D0; }
+        .connect-wallet {
+            background: #2ecc71; color: white; padding: 8px 15px;
+            border-radius: 20px; font-size: 12px; font-weight: bold;
+        }
 
-        /* Zone de clic */
+        /* Score */
+        .header { text-align: center; margin-top: 10px; }
+        .points-label { color: #f39c12; font-size: 18px; margin-bottom: 5px; }
+        .score-container { font-size: 48px; font-weight: bold; color: white; }
+
+        /* Zone de clic avec ton image de Garba */
         .click-area {
             flex-grow: 1; display: flex; justify-content: center; align-items: center;
             position: relative; width: 100%;
         }
-
         .garba-container {
-            position: relative; width: 260px; height: 260px;
+            position: relative; width: 300px; height: 300px;
             display: flex; justify-content: center; align-items: center;
         }
-
-        /* Le cercle orange qui brille */
-        .orange-ring {
+        .orange-glow {
             position: absolute; width: 100%; height: 100%;
-            border-radius: 50%; border: 6px solid #f39c12;
-            box-shadow: 0 0 30px rgba(243, 156, 18, 0.6);
-            z-index: 1;
+            border-radius: 50%; border: 4px solid rgba(243, 156, 18, 0.8);
+            box-shadow: 0 0 50px rgba(243, 156, 18, 0.5);
         }
-
         .garba-img {
-            width: 230px; height: 230px; border-radius: 50%;
-            object-fit: cover; border: 4px solid white;
-            transition: transform 0.05s; z-index: 2;
+            width: 260px; z-index: 2; transition: transform 0.05s;
+            cursor: pointer;
         }
+        .garba-img:active { transform: scale(0.95); }
 
-        .garba-img:active { transform: scale(0.92); }
-
-        /* Animation +1 qui monte */
+        /* Animation +1 */
         .plus-one {
-            position: absolute; color: #fbb03b; font-size: 28px;
+            position: absolute; color: white; font-size: 32px;
             font-weight: bold; pointer-events: none;
-            animation: floatUp 0.7s ease-out forwards;
-            z-index: 10;
+            animation: floatUp 0.8s ease-out forwards; z-index: 10;
         }
-
         @keyframes floatUp {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-150px); opacity: 0; }
         }
 
-        /* Menu de navigation du bas */
-        .bottom-nav {
+        /* Menu style "Earn" */
+        .action-menu {
             width: 100%; display: flex; justify-content: space-around;
-            background: #0f2030; padding: 15px 0; border-top: 1px solid #1a3a5a;
+            padding-bottom: 30px;
         }
-        .nav-item { text-align: center; font-size: 12px; color: #888; }
-        .nav-item.active { color: #fbb03b; }
+        .action-item {
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 10px; color: white; font-weight: bold;
+        }
+        .circle-btn {
+            width: 55px; height: 55px; border-radius: 50%;
+            background: #1a3a5a; border: 2px solid #40E0D0;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 5px; font-size: 20px;
+        }
     </style>
 </head>
 <body>
 
+    <div class="top-bar">
+        <span style="font-size: 20px;">🚀</span>
+        <div class="connect-wallet">Connect Wallet</div>
+        <span style="font-size: 20px;">💼</span>
+    </div>
+
     <div class="header">
-        <div class="level-badge">Niveau 1: Apprenti</div>
-        <div class="score-container">💰 <span id="score">832</span></div>
+        <div class="points-label">Points:</div>
+        <div class="score-container" id="score">12,456</div>
     </div>
 
     <div class="click-area" id="main-area">
         <div class="garba-container">
-            <div class="orange-ring"></div>
-            <img src="https://i.postimg.cc/mD8zMv7X/garba-img.jpg" class="garba-img" id="garba-btn" onerror="this.src='https://www.referencetid.com/wp-content/uploads/2021/04/Garba-ivoirien.jpg'">
+            <div class="orange-glow"></div>
+            <img src="https://i.ibb.co/30a0574/garba-img.jpg" class="garba-img" id="garba-btn">
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item active">🏠<br>Accueil</div>
-        <div class="nav-item">🍳<br>Cuisine</div>
-        <div class="nav-item">👥<br>Amis</div>
-        <div class="nav-item">🏆<br>Rangs</div>
+    <div class="action-menu">
+        <div class="action-item">
+            <div class="circle-btn">🌶️</div>
+            BOOSTS
+        </div>
+        <div class="action-item">
+            <div class="circle-btn">🪙</div>
+            EARN TON
+        </div>
+        <div class="action-item">
+            <div class="circle-btn">👥</div>
+            INVITE FRIENDS
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let score = 832; // Score mis à jour d'après ta capture
+        let score = 12456; 
         const scoreElement = document.getElementById('score');
         const garbaBtn = document.getElementById('garba-btn');
 
         garbaBtn.addEventListener('touchstart', (e) => {
-            score++;
-            scoreElement.innerText = score;
+            score += 1;
+            scoreElement.innerText = score.toLocaleString();
 
-            // Vibration haptique
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
-            // Effet +1
             const touch = e.touches[0];
             const plus = document.createElement('div');
             plus.className = 'plus-one';
@@ -118,7 +134,7 @@
             plus.style.top = touch.clientY + 'px';
             document.body.appendChild(plus);
 
-            setTimeout(() => plus.remove(), 700);
+            setTimeout(() => plus.remove(), 800);
         });
     </script>
 </body>
