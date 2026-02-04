@@ -3,55 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon</title>
+    <title>Garba Tycoon Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { user-select: none; -webkit-tap-highlight-color: transparent; background: #000; color: #fff; font-family: sans-serif; }
-        .tab-content { display: none; }
+        body { user-select: none; -webkit-tap-highlight-color: transparent; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
+        .tab-content { display: none; height: 80vh; overflow-y: auto; padding-bottom: 100px; }
         .active { display: block; }
-        .card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 10px; margin-bottom: 10px; }
-        .card img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        
+        /* BOUTON PRINCIPAL BIEN ROND */
+        .circle-btn {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #f59e0b 0%, #78350f 100%);
+            border: 8px solid #3d1a07;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: transform 0.05s;
+        }
+        .circle-btn:active { transform: scale(0.92); }
+        .circle-btn img { width: 80%; height: 80%; object-fit: contain; }
+
+        .card { background: #1c1c1e; border: 1px solid #3a3a3c; border-radius: 16px; padding: 12px; }
+        .nav-btn.active { color: #f59e0b; border-top: 2px solid #f59e0b; }
     </style>
 </head>
 <body>
-    <div class="p-4 max-w-md mx-auto pb-24">
-        <div class="flex justify-between items-center mb-6">
+    <div class="p-4 max-w-md mx-auto">
+        <div class="flex justify-between items-center mb-6 bg-[#1c1c1e] p-3 rounded-2xl border border-[#3a3a3c]">
             <div>
-                <h1 class="text-xl font-bold text-yellow-500">GARBA TYCOON</h1>
-                <p id="level-name" class="text-xs text-gray-400">Apprenti du Maquis</p>
+                <p id="level-name" class="text-[10px] text-gray-400">Niveau 1</p>
+                <p class="text-xs font-bold text-white">Apprenti</p>
             </div>
             <div class="text-right">
-                <p class="text-xs text-gray-400">Gain/Heure</p>
-                <p id="profit-rate" class="text-green-500 font-bold">+0</p>
+                <p class="text-[10px] text-gray-400">Gain par heure</p>
+                <p id="profit-rate" class="text-green-500 font-bold text-sm">+0 💰</p>
             </div>
         </div>
 
-        <div class="text-center mb-8">
+        <div class="text-center my-6">
             <h2 id="balance" class="text-5xl font-black text-white">0</h2>
-            <p class="text-yellow-500 text-sm mt-1">PIÈCES</p>
         </div>
 
-        <div id="home" class="tab-content active text-center">
-            <div class="relative inline-block mt-4" onclick="clickTap(event)">
-                <img src="1770136311457.png" class="w-64 h-64 mx-auto active:scale-95 transition-transform" alt="Garba">
+        <div id="exchange" class="tab-content active text-center">
+            <div class="circle-btn" onclick="handleTap(event)">
+                <img src="1770136311457.png" alt="Garba">
             </div>
-            <button id="upgrade-btn" onclick="upgradeLevel()" class="w-full mt-10 bg-yellow-500 text-black font-bold py-4 rounded-xl shadow-lg">
-                UPGRADE: Chargement...
-            </button>
         </div>
 
         <div id="mine" class="tab-content">
-            <h3 class="text-lg font-bold mb-4">Améliorez votre Maquis</h3>
             <div id="cards-container" class="grid grid-cols-2 gap-3">
                 </div>
         </div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-gray-800 p-3 flex justify-around">
-            <button onclick="showTab('home')" class="text-center text-gray-400 focus:text-yellow-500">
-                <div class="text-xl">🏠</div><span class="text-[10px]">Home</span>
+        <div class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-[#333] p-4 flex justify-around z-50">
+            <button onclick="showTab('exchange')" class="nav-btn active flex flex-col items-center">
+                <span class="text-xl">🏠</span><span class="text-[10px]">Exchange</span>
             </button>
-            <button onclick="showTab('mine')" class="text-center text-gray-400 focus:text-yellow-500">
-                <div class="text-xl">⛏️</div><span class="text-[10px]">Mine</span>
+            <button onclick="showTab('mine')" class="nav-btn flex flex-col items-center text-gray-500">
+                <span class="text-xl">⛏️</span><span class="text-[10px]">Mine</span>
             </button>
         </div>
     </div>
@@ -59,97 +73,9 @@
     <script>
         let balance = 0;
         let profitPerHour = 0;
-        let currentLevel = 0;
 
-        // Tes 10 niveaux réorganisés
-        const levels = [
-            { n: "Apprenti", c: 0 }, { n: "Laveur", c: 100 }, { n: "Serveur", c: 800 },
-            { n: "Vendeur", c: 2500 }, { n: "Maître", c: 10000 }, { n: "Gérant", c: 30000 },
-            { n: "Chef", c: 80000 }, { n: "Proprio", c: 200000 }, { n: "Roi", c: 500000 },
-            { n: "Tycoon 👑", c: 1500000 }
-        ];
-
-        // Tes 10 images classées en cartes
-        const cards = [
-            { id: 1, n: "Fourneau", img: "0fc2a7300d0d0d31...", p: 150, r: 5 },
-            { id: 2, n: "Sac d'Attiéké", img: "1b55adc08c1408e...", p: 500, r: 20 },
-            { id: 3, n: "Apprenti", img: "2e53d7ac43f6d2cc...", p: 1200, r: 55 },
-            { id: 4, n: "Livraison", img: "30a0574ef27c0236...", p: 3000, r: 150 },
-            { id: 5, n: "Stand Pro", img: "6fd7072639c8120d...", p: 8000, r: 420 },
-            { id: 6, n: "Poisson Frais", img: "725f1174c7bd19cc...", p: 20000, r: 1100 },
-            { id: 7, n: "Chef Cuisinier", img: "8ee8e877ac8f61dd...", p: 50000, r: 3000 },
-            { id: 8, n: "Pub Facebook", img: "9262d74003d778a...", p: 150000, r: 9500 },
-            { id: 9, n: "Moto Neuve", img: "9451fb0e3ad11cfc...", p: 400000, r: 28000 },
-            { id: 10, n: "Maquis VIP", img: "0fc2a7300d0d0d31...", p: 1000000, r: 75000 }
-        ];
-
-        function sync() {
-            document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
-            document.getElementById('profit-rate').innerText = `+${profitPerHour.toLocaleString()}/h`;
-            document.getElementById('level-name').innerText = levels[currentLevel].n;
-            
-            let next = levels[currentLevel + 1];
-            let btn = document.getElementById('upgrade-btn');
-            if(next) {
-                btn.innerText = `UPGRADE: ${next.n} (${next.c.toLocaleString()})`;
-                btn.disabled = balance < next.c;
-                btn.style.opacity = balance < next.c ? "0.5" : "1";
-            } else {
-                btn.innerText = "NIVEAU MAX ATTEINT";
-                btn.disabled = true;
-            }
-        }
-
-        function clickTap(e) {
-            balance += (1 + (currentLevel * 2));
-            sync();
-        }
-
-        function upgradeLevel() {
-            let next = levels[currentLevel + 1];
-            if(next && balance >= next.c) {
-                balance -= next.c;
-                currentLevel++;
-                sync();
-            }
-        }
-
-        function buyCard(id) {
-            let card = cards.find(c => c.id === id);
-            if(balance >= card.p) {
-                balance -= card.p;
-                profitPerHour += card.r;
-                card.p = Math.floor(card.p * 1.5); // Le prix augmente après achat
-                renderCards();
-                sync();
-            }
-        }
-
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = cards.map(c => `
-                <div class="card" onclick="buyCard(${c.id})">
-                    <img src="${c.img}" onerror="this.src='1770136311457.png'">
-                    <p class="font-bold text-sm">${c.n}</p>
-                    <p class="text-[10px] text-green-500">+${c.r}/h</p>
-                    <p class="text-xs text-yellow-500 mt-1">${c.p.toLocaleString()}</p>
-                </div>
-            `).join('');
-        }
-
-        function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        // Gain passif chaque seconde
-        setInterval(() => {
-            balance += (profitPerHour / 3600);
-            sync();
-        }, 1000);
-
-        renderCards();
-        sync();
-    </script>
-</body>
-</html>
+        // Tes images réelles de GitHub
+        const cardsData = [
+            { n: "Fourneau", img: "0fc2a7300d0d0d31...", p: 200, r: 10 },
+            { n: "Att
+        
