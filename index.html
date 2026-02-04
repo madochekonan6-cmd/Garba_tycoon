@@ -3,169 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon Pro</title>
+    <title>Garba Tycoon</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --primary-gold: #f3ba2f;
-            --bg-dark: #06142e;
-            --wallet-green: #1e4d3a;
+            --gold: #f3ba2f;
+            --bg: #0b0e11;
+            --card-dark: #1c1f24;
         }
 
         body { 
-            margin: 0; background: var(--bg-dark); color: white; 
-            font-family: 'Segoe UI', sans-serif; overflow: hidden;
+            margin: 0; background: var(--bg); color: white; 
+            font-family: 'Inter', sans-serif; overflow: hidden;
             user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
-        .app {
+        .container {
             height: 100vh; display: flex; flex-direction: column;
             align-items: center; justify-content: space-between; padding: 20px;
         }
 
-        /* Stats */
-        .points-container { text-align: center; margin-top: 10px; }
-        .points-value { font-size: 3.5rem; font-weight: 900; margin: 0; color: white; }
-        .level-badge { color: var(--primary-gold); font-weight: bold; font-size: 1rem; }
-        .income-info { color: #4ade80; font-size: 0.9rem; margin-top: 5px; }
-
-        /* IMAGE EN ROND */
-        .clicker-area {
-            position: relative; width: 100%; display: flex;
-            justify-content: center; align-items: center; flex-grow: 1;
+        /* Top Bar comme Hamster */
+        .top-info {
+            width: 100%; display: flex; justify-content: space-between;
+            background: var(--card-dark); padding: 10px; border-radius: 15px;
+            font-size: 0.8rem; border: 1px solid #333;
         }
 
-        .circle-container {
-            width: 280px; height: 280px;
-            border-radius: 50%; /* REND L'IMAGE RONDE */
-            border: 5px solid var(--primary-gold);
-            overflow: hidden; /* COUPE LES BORDS */
-            box-shadow: 0 0 30px rgba(243, 186, 47, 0.4);
-            background: #000;
+        .stat-box { text-align: center; flex: 1; }
+        .stat-label { color: #848e9c; display: block; margin-bottom: 2px; }
+        .stat-value { color: var(--gold); font-weight: bold; }
+
+        /* Points central */
+        .score-section { text-align: center; margin-top: 20px; }
+        .score-display { font-size: 3.5rem; font-weight: 900; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .score-display span { color: var(--gold); }
+
+        /* IMAGE EN ROND STYLE HAMSTER */
+        .clicker-container {
+            position: relative; width: 300px; height: 300px;
             display: flex; justify-content: center; align-items: center;
-            transition: transform 0.05s;
         }
 
-        .circle-container:active { transform: scale(0.92); }
-
-        .garba-img {
-            width: 100%; height: 100%;
-            object-fit: cover; /* REMPLIT LE ROND SANS DÉFORMER */
+        .circle-outer {
+            width: 280px; height: 280px; border-radius: 50%;
+            background: radial-gradient(circle, #2a2e35 0%, #1c1f24 100%);
+            border: 8px solid #2a2e35; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); overflow: hidden;
+            transition: transform 0.05s ease;
         }
 
-        /* Animations */
-        .tap-pop {
-            position: absolute; color: white; font-size: 2.5rem;
-            font-weight: 900; animation: floatPop 0.7s forwards; pointer-events: none;
-        }
-        @keyframes floatPop {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-150px); }
+        .circle-outer:active { transform: scale(0.95); }
+
+        .garba-main-img {
+            width: 90%; height: 90%; object-fit: cover; border-radius: 50%;
         }
 
         /* Upgrade Button */
-        .upgrade-section { width: 100%; margin-bottom: 20px; text-align: center; }
-        .upgrade-btn {
-            background: var(--primary-gold); color: black;
-            padding: 12px 25px; border-radius: 12px; font-weight: bold;
-            border: none; cursor: pointer; box-shadow: 0 4px #b37700;
+        .upgrade-bar { width: 100%; padding: 10px; }
+        .btn-upgrade {
+            width: 100%; background: linear-gradient(90deg, #f3ba2f, #db9b10);
+            border: none; padding: 15px; border-radius: 15px;
+            color: black; font-weight: bold; font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.3);
         }
-        .upgrade-btn:active { transform: translateY(2px); box-shadow: 0 2px #b37700; }
 
-        .bottom-nav { width: 100%; display: flex; justify-content: space-around; padding-bottom: 10px; }
-        .nav-item { font-size: 0.7rem; text-align: center; opacity: 0.6; }
+        /* Footer Menu */
+        .nav-menu {
+            width: 100%; display: grid; grid-template-columns: repeat(4, 1fr);
+            background: #1c1f24; border-radius: 20px 20px 0 0; padding: 15px 0;
+        }
+        .nav-link { text-align: center; font-size: 0.7rem; color: #848e9c; }
+        .nav-link.active { color: white; }
+
+        /* Pop-up animation */
+        .pop { position: absolute; color: white; font-weight: 900; font-size: 2.5rem; animation: popUp 0.8s ease-out forwards; pointer-events: none; }
+        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-150px); } }
     </style>
 </head>
 <body>
-    <div class="app">
-        <div class="points-container">
-            <div class="level-badge" id="levelName">Niveau 1: Apprenti</div>
-            <h1 class="points-value" id="score">0</h1>
-            <div class="income-info" id="incomeText">+0 / sec</div>
-        </div>
-        
-        <div class="clicker-area" id="tapZone">
-            <div class="circle-container">
-                <img src="1770136311457.png" class="garba-img">
-            </div>
-        </div>
 
-        <div class="upgrade-section">
-            <button class="upgrade-btn" id="upgradeBtn">UPGRADE (Coût: 50)</button>
+<div class="container">
+    <div class="top-info">
+        <div class="stat-box">
+            <span class="stat-label">Gain / clic</span>
+            <span class="stat-value">+1</span>
         </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item">🌶️<br>BOOSTS</div>
-            <div class="nav-item" style="opacity: 1; color:var(--primary-gold)">💰<br>EARN</div>
-            <div class="nav-item">👥<br>INVITE</div>
+        <div class="stat-box" style="border-left: 1px solid #333; border-right: 1px solid #333;">
+            <span class="stat-label">Niveau</span>
+            <span class="stat-value" id="lvlName">Apprenti</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Gain / heure</span>
+            <span class="stat-value" id="perHour">+0</span>
         </div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        let score = parseInt(localStorage.getItem('g_score')) || 0;
-        let level = parseInt(localStorage.getItem('g_level')) || 1;
+    <div class="score-section">
+        <h1 class="score-display">🪙 <span id="score">0</span></h1>
+    </div>
+
+    <div class="clicker-container" id="tapZone">
+        <div class="circle-outer">
+            <img src="1770136311457.png" class="garba-main-img" alt="Garba">
+        </div>
+    </div>
+
+    <div class="upgrade-bar">
+        <button class="btn-upgrade" id="upBtn">Chargement...</button>
+    </div>
+
+    <div class="nav-menu">
+        <div class="nav-link active">🏠<br>Échange</div>
+        <div class="nav-link">⛏️<br>Mine</div>
+        <div class="nav-link">👥<br>Amis</div>
+        <div class="nav-link">💰<br>Earn</div>
+    </div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    const levels = [
+        { n: "Apprenti", c: 0, p: 0 },
+        { n: "Vendeur Pro", c: 100, p: 2 },
+        { n: "Maître Attiéké", c: 500, p: 8 },
+        { n: "Chef de Maquis", c: 2500, p: 25 },
+        { n: "Roi d'Abidjan", c: 10000, p: 100 },
+        { n: "Garba Tycoon", c: 50000, p: 500 }
+        // Ajoute les autres niveaux ici jusqu'à 20
+    ];
+
+    let score = parseInt(localStorage.getItem('g_score')) || 0;
+    let lvl = parseInt(localStorage.getItem('g_lvl')) || 1;
+
+    function format(n) { return n.toLocaleString(); }
+
+    function sync() {
+        document.getElementById('score').innerText = format(score);
+        document.getElementById('lvlName').innerText = levels[lvl-1].n;
+        document.getElementById('perHour').innerText = "+" + format(levels[lvl-1].p * 3600);
         
-        const scoreEl = document.getElementById('score');
-        const incomeEl = document.getElementById('incomeText');
-        const levelEl = document.getElementById('levelName');
-        const upgradeBtn = document.getElementById('upgradeBtn');
-        const tapZone = document.getElementById('tapZone');
-
-        tg.expand();
-
-        function updateUI() {
-            scoreEl.innerText = Math.floor(score).toLocaleString();
-            let autoGain = (level - 1) * 2; // Niveau 1 = 0, Niveau 2 = 2, Niveau 3 = 4...
-            incomeEl.innerText = "+" + autoGain + " / sec";
-            levelEl.innerText = "Niveau " + level;
-            upgradeBtn.innerText = "UPGRADE NIVEAU " + (level + 1) + " (Coût: " + (level * 100) + ")";
+        const next = levels[lvl];
+        const btn = document.getElementById('upBtn');
+        if(next) {
+            btn.innerText = `UPGRADE: ${next.n} (${format(next.cost || next.c)})`;
+            btn.disabled = false;
+        } else {
+            btn.innerText = "MAX ATTEINT";
+            btn.disabled = true;
         }
+    }
 
-        // 1. REVENU PASSIF (Seulement si niveau > 1)
-        setInterval(() => {
-            if (level > 1) {
-                score += (level - 1) * 2; 
-                updateUI();
-                localStorage.setItem('g_score', score);
-            }
-        }, 1000);
-
-        // 2. BOUTON UPGRADE
-        upgradeBtn.addEventListener('click', () => {
-            let cost = level * 100;
-            if (score >= cost) {
-                score -= cost;
-                level += 1;
-                localStorage.setItem('g_level', level);
-                localStorage.setItem('g_score', score);
-                updateUI();
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } else {
-                alert("Pas assez de points !");
-            }
-        });
-
-        // 3. CLIC MANUEL
-        tapZone.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-            score += 1;
-            updateUI();
+    // Revenu passif (chaque seconde)
+    setInterval(() => {
+        if(lvl > 1) {
+            score += levels[lvl-1].p;
+            sync();
             localStorage.setItem('g_score', score);
+        }
+    }, 1000);
 
-            const touch = e.touches[0];
-            const pop = document.createElement('div');
-            pop.className = 'tap-pop';
-            pop.innerText = '+1';
-            pop.style.left = `${touch.clientX - 20}px`;
-            pop.style.top = `${touch.clientY - 50}px`;
-            document.body.appendChild(pop);
-            setTimeout(() => pop.remove(), 700);
-        });
+    // Clic
+    document.getElementById('tapZone').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        score += 1;
+        sync();
+        localStorage.setItem('g_score', score);
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        
+        const t = e.touches[0];
+        const p = document.createElement('div');
+        p.className = 'pop'; p.innerText = '+1';
+        p.style.left = t.clientX + 'px'; p.style.top = t.clientY + 'px';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 800);
+    });
 
-        updateUI();
-    </script>
+    // Upgrade
+    document.getElementById('upBtn').onclick = () => {
+        const next = levels[lvl];
+        if(score >= next.c) {
+            score -= next.c; lvl++;
+            localStorage.setItem('g_lvl', lvl);
+            localStorage.setItem('g_score', score);
+            sync();
+        }
+    };
+
+    tg.expand();
+    sync();
+</script>
+
 </body>
 </html>
