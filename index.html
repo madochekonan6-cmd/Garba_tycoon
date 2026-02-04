@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GarbaTycoon Ultimate</title>
+    <title>GarbaTycoon 3D</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -19,46 +19,53 @@
         .lvl-badge { background: #1a3a5a; border: 1px solid #f39c12; padding: 5px 12px; border-radius: 15px; color: #f39c12; font-weight: bold; cursor: pointer; }
 
         .header { text-align: center; }
-        .score-container { font-size: 45px; font-weight: bold; color: white; margin: 0; }
-        #rank-name { color: #40E0D0; font-size: 14px; text-transform: uppercase; margin-top: 5px; }
+        .score-container { font-size: 45px; font-weight: bold; color: white; margin: 0; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        #rank-name { color: #40E0D0; font-size: 14px; text-transform: uppercase; margin-top: 5px; font-weight: bold; }
 
-        /* Zone de clic */
+        /* ZONE DE CLIC ET EFFET 3D */
         .click-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; width: 100%; position: relative; }
-        .garba-container { position: relative; width: 260px; height: 260px; display: flex; justify-content: center; align-items: center; }
-        .orange-glow { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #f39c12; box-shadow: 0 0 40px rgba(243, 156, 18, 0.6); }
-        .garba-img { width: 220px; z-index: 2; transition: transform 0.05s; border-radius: 50%; border: 3px solid white; }
-        .garba-img:active { transform: scale(0.92); }
-
-        /* Modals (Ads & Réseaux) */
-        .full-modal {
-            position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
-            background: #050a0f; z-index: 400; transition: 0.4s;
-            display: flex; flex-direction: column;
-        }
-        .full-modal.active { top: 0; }
-        .modal-content { padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
         
-        .task-card {
-            background: #1a3a5a; border-radius: 15px; padding: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid #333;
+        .garba-3d-button {
+            position: relative;
+            width: 250px; height: 250px;
+            border-radius: 50%;
+            background: #f39c12; /* Couleur de base */
+            cursor: pointer;
+            /* L'ombre du bas qui donne l'effet 3D (profondeur) */
+            box-shadow: 0 15px 0 #a06a09, 0 20px 30px rgba(0,0,0,0.6);
+            transition: all 0.05s ease;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            border: 4px solid #fff;
         }
-        .earn-btn { background: #2ecc71; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; }
+
+        /* Quand on appuie : le bouton s'enfonce */
+        .garba-3d-button:active {
+            transform: translateY(10px);
+            box-shadow: 0 5px 0 #a06a09, 0 10px 20px rgba(0,0,0,0.6);
+        }
+
+        .garba-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* Laisse le clic passer au bouton */
+        }
+
+        /* Animation +1 */
+        .plus-one { position: absolute; color: white; font-size: 35px; font-weight: bold; pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 10; text-shadow: 0 2px 5px #000; }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-150px) scale(1.5); opacity: 0; } }
 
         /* Menu Bas */
         .action-menu { width: 100%; display: flex; justify-content: space-around; padding: 15px 0 30px 0; background: #050a0f; border-top: 1px solid #1a3a5a; }
-        .action-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; cursor: pointer; }
-        .circle-btn { width: 48px; height: 48px; border-radius: 50%; background: #1a3a5a; border: 2px solid #40E0D0; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; font-size: 20px; }
-
-        .plus-one { position: absolute; color: white; font-size: 30px; font-weight: bold; pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 10; }
-        @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-130px); opacity: 0; } }
+        .circle-btn { width: 50px; height: 50px; border-radius: 50%; background: #1a3a5a; border: 2px solid #40E0D0; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; font-size: 20px; }
+        .action-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #bbb; }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
         <div class="lvl-badge">Niv. <span id="lvl-num">1</span></div>
-        <div style="color: #2ecc71; font-weight: bold; font-size: 12px;">Wallet</div>
+        <div style="color: #2ecc71; font-weight: bold; font-size: 12px;">Portefeuille</div>
     </div>
 
     <div class="header">
@@ -67,54 +74,15 @@
     </div>
 
     <div class="click-area">
-        <div class="garba-container">
-            <div class="orange-glow"></div>
-            <img src="https://i.ibb.co/30a0574/garba-img.jpg" class="garba-img" id="garba-btn" onerror="this.src='https://raw.githubusercontent.com/richard-coding-officiel/Garba_tycoon/main/garba-img.jpg'">
-        </div>
-    </div>
-
-    <div id="earn-modal" class="full-modal">
-        <div style="padding: 20px; display: flex; justify-content: space-between; background: #0d1b2a; border-bottom: 2px solid #f39c12;">
-            <h3>💰 Gagner des Pièces</h3>
-            <button onclick="toggleModal('earn-modal')" style="background:none; border:none; color:white; font-size:24px;">✖</button>
-        </div>
-        <div class="modal-content">
-            <h4 style="color: #f39c12;">Publicités</h4>
-            <div class="task-card">
-                <div>Standard Ads <br><small style="color:#f1c40f">+1,000</small></div>
-                <button class="earn-btn" onclick="reward(1000, 'vibe')">Voir</button>
-            </div>
-            <div class="task-card" style="border-color: #f1c40f;">
-                <div>Bonus Réveil (ADS x10) <br><small style="color:#f1c40f">+10,000</small></div>
-                <button class="earn-btn" style="background:#f1c40f; color:black;" onclick="reward(10000, 'heavy')">Voir</button>
-            </div>
-
-            <h4 style="color: #40E0D0; margin-top: 10px;">Réseaux Sociaux</h4>
-            <div class="task-card">
-                <div>Rejoindre Telegram <br><small style="color:#2ecc71">+5,000</small></div>
-                <button class="earn-btn" onclick="window.open('https://t.me/ton_canal'); reward(5000);">Suivre</button>
-            </div>
-            <div class="task-card">
-                <div>Suivre sur X (Twitter) <br><small style="color:#2ecc71">+5,000</small></div>
-                <button class="earn-btn" onclick="window.open('https://x.com/ton_compte'); reward(5000);">Suivre</button>
-            </div>
-            <div class="task-card">
-                <div>Abonnement YouTube <br><small style="color:#2ecc71">+10,000</small></div>
-                <button class="earn-btn" onclick="window.open('https://youtube.com/ton_id'); reward(10000);">S'abonner</button>
-            </div>
+        <div class="garba-3d-button" id="garba-btn">
+            <img src="https://i.ibb.co/30a0574/garba-img.jpg" class="garba-img" onerror="this.src='https://raw.githubusercontent.com/richard-coding-officiel/Garba_tycoon/main/garba-img.jpg'">
         </div>
     </div>
 
     <div class="action-menu">
-        <div class="action-item" onclick="toggleModal('earn-modal')">
-            <div class="circle-btn">💰</div>EARN
-        </div>
-        <div class="action-item">
-            <div class="circle-btn">🎴</div>CARTES
-        </div>
-        <div class="action-item">
-            <div class="circle-btn">👥</div>AMIS
-        </div>
+        <div class="action-item"><div class="circle-btn">💰</div>EARN</div>
+        <div class="action-item"><div class="circle-btn">🎴</div>CARTES</div>
+        <div class="action-item"><div class="circle-btn">👥</div>AMIS</div>
     </div>
 
     <script>
@@ -125,36 +93,21 @@
         let level = 1;
         const ranks = ["Apprenti", "Chercheur de Thon", "Vendeur de Rue", "Petit Maître", "Chef de Stand", "Propriétaire", "Grossiste", "Baron", "Prince", "Roi du Plateau", "Expert", "Magnat", "PDG", "Ministre", "Ambassadeur", "Légende", "Empereur", "Dieu", "Tycoon Suprême", "Maître du Monde"];
 
-        function toggleModal(id) { document.getElementById(id).classList.toggle('active'); }
+        const btn = document.getElementById('garba-btn');
 
-        function reward(gain, type) {
-            score += gain;
-            updateUI();
-            if (tg.HapticFeedback) {
-                if (type === 'heavy') tg.HapticFeedback.notificationOccurred('success');
-                else tg.HapticFeedback.impactOccurred('medium');
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('score').innerText = score.toLocaleString();
-            document.getElementById('lvl-num').innerText = level;
-            document.getElementById('rank-name').innerText = ranks[level - 1];
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Empêche le zoom/scroll
             
-            let nextLevelScore = level * level * 500;
-            if (score >= nextLevelScore && level < 20) {
-                level++;
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
-                updateUI();
-            }
-        }
-
-        document.getElementById('garba-btn').addEventListener('touchstart', (e) => {
+            // 1. Score
             score += 1;
             updateUI();
-            // Vibration haptique à chaque clic
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
+            // 2. VIBRATION FORTE (Haptic)
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium'); 
+            }
+
+            // 3. EFFET +1 VISUEL
             const touch = e.touches[0];
             const plus = document.createElement('div');
             plus.className = 'plus-one';
@@ -165,8 +118,20 @@
             setTimeout(() => plus.remove(), 700);
         });
 
+        function updateUI() {
+            document.getElementById('score').innerText = score.toLocaleString();
+            document.getElementById('lvl-num').innerText = level;
+            document.getElementById('rank-name').innerText = ranks[level - 1];
+            
+            let nextLevelScore = level * level * 500;
+            if (score >= nextLevelScore && level < 20) {
+                level++;
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                updateUI();
+            }
+        }
+
         updateUI();
     </script>
 </body>
-                </html>
-    
+</html>
