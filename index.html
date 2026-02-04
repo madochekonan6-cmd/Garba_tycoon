@@ -3,43 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon Pro - Combo Edition</title>
+    <title>Garba Tycoon Pro - Community Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { user-select: none; background: #0b0b0d; color: #fff; font-family: sans-serif; margin: 0; overflow: hidden; }
-        .tab-content { display: none; height: 78vh; padding: 15px; overflow-y: auto; padding-bottom: 100px; }
+        .tab-content { display: none; height: 80vh; padding: 15px; overflow-y: auto; padding-bottom: 120px; }
         .active { display: block; }
         
         /* CERCLE JAUNE ET IMAGE RONDE */
         .circle-main {
             position: relative; width: 260px; height: 260px;
-            margin: 15px auto; border-radius: 50%;
+            margin: 10px auto; border-radius: 50%;
             border: 6px solid #f59e0b; box-shadow: 0 0 25px #f59e0b;
             overflow: hidden; display: flex; align-items: center; justify-content: center;
-            background: #1c1c1e; cursor: pointer; transition: transform 0.1s;
+            background: #1c1c1e; cursor: pointer; transition: transform 0.05s;
         }
-        .circle-main:active { transform: scale(0.95); }
+        .circle-main:active { transform: scale(0.92); }
         .garba-img { width: 100%; height: 100%; object-fit: cover; }
 
         /* COMBO SLOTS */
         .combo-slot { width: 60px; height: 60px; background: #1c1c1e; border: 2px dashed #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
         .combo-found { border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.1); }
 
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: #161618; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; z-index: 100; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 9px; color: #666; font-weight: bold; }
-        .nav-btn.active-tab { color: #f59e0b; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; z-index: 100; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 9px; color: #666; }
+        .nav-btn.active-tab { color: #f59e0b; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="p-4 max-w-md mx-auto">
         <div class="flex justify-between items-center mb-4">
-            <button class="bg-blue-600 text-white text-[10px] px-4 py-1.5 rounded-lg font-bold">Connect Wallet</button>
-            <div class="flex gap-4">
-                <div class="text-right">
-                    <p class="text-[8px] text-gray-500 font-bold uppercase">Profit / h</p>
-                    <p id="profit-rate" class="text-green-500 font-bold text-xs">+0</p>
-                </div>
+            <button onclick="connectWallet()" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] px-4 py-1.5 rounded-lg font-bold transition">Connect Wallet</button>
+            <div class="text-right">
+                <p class="text-[8px] text-gray-500 font-bold uppercase">Profit / h</p>
+                <p id="profit-rate" class="text-green-500 font-bold text-xs">+0</p>
             </div>
         </div>
 
@@ -50,15 +48,12 @@
         <div id="exchange" class="tab-content active">
             <div class="bg-[#1c1c1e] p-3 rounded-2xl border border-gray-800 mb-4">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Énigme Daily Combo</span>
+                    <span class="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Daily Combo</span>
                     <span class="text-white font-bold text-[10px]">🎁 5,000,000</span>
                 </div>
                 <div class="flex justify-center gap-4" id="combo-display">
-                    <div class="combo-slot">?</div>
-                    <div class="combo-slot">?</div>
-                    <div class="combo-slot">?</div>
+                    <div class="combo-slot">?</div><div class="combo-slot">?</div><div class="combo-slot">?</div>
                 </div>
-                <p class="text-[8px] text-gray-500 text-center mt-2 italic">Trouve les 3 cartes secrètes dans la Mine pour gagner !</p>
             </div>
 
             <div class="circle-main" onclick="handleTap(event)">
@@ -73,51 +68,97 @@
             </div>
         </div>
 
-        <div id="mine" class="tab-content">
-            <h2 class="text-center font-black text-gray-500 text-xs mb-6 uppercase">Marché du Garba</h2>
-            <div id="cards-container" class="grid grid-cols-2 gap-3"></div>
+        <div id="tasks" class="tab-content">
+            <h2 class="text-center font-black text-yellow-500 text-sm mb-6 uppercase">Missions Communautaires</h2>
+            <div class="space-y-4">
+                <div class="bg-[#1c1c1e] p-4 rounded-2xl border border-gray-800 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">📢</span>
+                        <div>
+                            <p class="text-xs font-bold">Rejoint le Canal</p>
+                            <p class="text-[10px] text-green-500">+100,000</p>
+                        </div>
+                    </div>
+                    <button onclick="completeTask('tg', 'https://t.me/TON_CANAL')" class="bg-white text-black text-[10px] px-4 py-2 rounded-xl font-bold">GO</button>
+                </div>
+                <div class="bg-[#1c1c1e] p-4 rounded-2xl border border-gray-800 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">🟢</span>
+                        <div>
+                            <p class="text-xs font-bold">Groupe WhatsApp</p>
+                            <p class="text-[10px] text-green-500">+100,000</p>
+                        </div>
+                    </div>
+                    <button onclick="completeTask('wa', 'https://wa.me/TON_GROUPE')" class="bg-white text-black text-[10px] px-4 py-2 rounded-xl font-bold">GO</button>
+                </div>
+            </div>
         </div>
 
-        <div id="friends" class="tab-content text-center pt-10">
-            <h2 class="text-2xl font-black mb-4">Invite des Amis !</h2>
-            <p class="text-gray-400 text-sm mb-6">Gagne 25,000 pour chaque ami invité.</p>
-            <div class="bg-[#1c1c1e] p-6 rounded-3xl border border-gray-800">
-                <p class="text-xs text-yellow-500 font-bold mb-2">Ton lien :</p>
-                <code class="text-[10px] bg-black p-2 rounded block">t.me/garba_tycoon_bot?start=user123</code>
-                <button class="w-full bg-yellow-600 text-black font-black py-3 rounded-xl mt-4">COPIER LE LIEN</button>
-            </div>
+        <div id="mine" class="tab-content">
+            <div id="cards-container" class="grid grid-cols-2 gap-3"></div>
         </div>
     </div>
 
     <nav>
-        <button onclick="showTab('exchange')" class="nav-btn active-tab" id="btn-exchange">🏠<span>Exchange</span></button>
+        <button onclick="showTab('exchange')" class="nav-btn active-tab" id="btn-exchange">🏠<span>Jeu</span></button>
         <button onclick="showTab('mine')" class="nav-btn" id="btn-mine">⛏️<span>Mine</span></button>
-        <button onclick="showTab('friends')" class="nav-btn" id="btn-friends">👥<span>Friends</span></button>
+        <button onclick="showTab('tasks')" class="nav-btn" id="btn-tasks">📢<span>Missions</span></button>
     </nav>
 
     <script>
-        // CONFIGURATION DU COMBO (L'ÉNIGME) : Change ces IDs chaque jour
         const DAILY_COMBO_IDS = [2, 4, 5]; 
-
-        let state = JSON.parse(localStorage.getItem('garba_master_v1')) || {
-            bal: 0, energy: 1000, maxE: 1000, profit: 0, lastComboClaim: "",
-            foundCombo: [],
+        let state = JSON.parse(localStorage.getItem('garba_pro_final')) || {
+            bal: 0, energy: 1000, maxE: 1000, profit: 0, foundCombo: [], lastComboClaim: "", tasks: [],
             cards: [
                 { id: 1, name: "Poisson Thon", price: 1000, profit: 120, img: "🐟" },
-                { id: 2, name: "Huile de Palme", price: 5000, profit: 550, img: "🧴" }, // Carte Combo
+                { id: 2, name: "Huile de Palme", price: 5000, profit: 550, img: "🧴" },
                 { id: 3, name: "Gros Charbon", price: 15000, profit: 1800, img: "🔥" },
-                { id: 4, name: "Piment Frais", price: 50000, profit: 6000, img: "🌶️" }, // Carte Combo
-                { id: 5, name: "Livreur Moto", price: 150000, profit: 20000, img: "🏍️" }, // Carte Combo
-                { id: 6, name: "Stand VIP", price: 500000, profit: 75000, img: "🎪" }
+                { id: 4, name: "Piment Frais", price: 50000, profit: 6000, img: "🌶️" },
+                { id: 5, name: "Livreur Moto", price: 150000, profit: 20000, img: "🏍️" }
             ]
         };
 
-        function save() { localStorage.setItem('garba_master_v1', JSON.stringify(state)); }
+        function save() { localStorage.setItem('garba_pro_final', JSON.stringify(state)); }
 
         function handleTap(e) {
             if (state.energy >= 1) {
                 state.bal += 1; state.energy -= 1;
+                // VIBRATION ICI
+                if (navigator.vibrate) navigator.vibrate(50);
                 updateUI(); save();
+            }
+        }
+
+        function connectWallet() {
+            alert("⚠️ Connection Wallet : Cette fonctionnalité nécessite un serveur sécurisé (backend) pour se lier à TON. En développement !");
+        }
+
+        function completeTask(id, url) {
+            if (!state.tasks.includes(id)) {
+                window.open(url, '_blank');
+                state.bal += 100000;
+                state.tasks.push(id);
+                updateUI(); save();
+                alert("Bonus de 100,000 points ajouté !");
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function buyCard(id) {
+            const c = state.cards.find(x => x.id === id);
+            if(state.bal >= c.price) {
+                state.bal -= c.price;
+                state.profit += c.profit;
+                c.price = Math.floor(c.price * 1.6);
+                if(DAILY_COMBO_IDS.includes(id) && !state.foundCombo.includes(id)) {
+                    state.foundCombo.push(id);
+                    if(state.foundCombo.length === 3) {
+                        state.bal += 5000000;
+                        alert("COMBO RÉSOLU ! +5,000,000");
+                    }
+                }
+                updateUI(); renderCards(); save();
             }
         }
 
@@ -127,51 +168,10 @@
                 <div onclick="buyCard(${c.id})" class="bg-[#1c1c1e] p-4 rounded-2xl border border-gray-800 text-center">
                     <span class="text-3xl">${c.img}</span>
                     <p class="text-[10px] font-black mt-2 uppercase">${c.name}</p>
-                    <p class="text-[9px] text-green-500 font-bold">+${c.profit.toLocaleString()}/h</p>
+                    <p class="text-[9px] text-green-500 font-bold">+${c.profit}/h</p>
                     <button class="w-full bg-yellow-600 text-black text-[10px] py-2 mt-3 rounded-xl font-black">${c.price.toLocaleString()}</button>
                 </div>
             `).join('');
-        }
-
-        function buyCard(id) {
-            const c = state.cards.find(x => x.id === id);
-            if(state.bal >= c.price) {
-                state.bal -= c.price;
-                state.profit += c.profit;
-                c.price = Math.floor(c.price * 1.6);
-                
-                // Vérifier si c'est une carte de l'énigme
-                if(DAILY_COMBO_IDS.includes(id) && !state.foundCombo.includes(id)) {
-                    state.foundCombo.push(id);
-                    checkComboSuccess();
-                }
-
-                updateUI(); renderCards(); save();
-            }
-        }
-
-        function checkComboSuccess() {
-            updateComboDisplay();
-            if(state.foundCombo.length === 3) {
-                const today = new Date().toDateString();
-                if(state.lastComboClaim !== today) {
-                    state.bal += 5000000;
-                    state.lastComboClaim = today;
-                    alert("🚨 COMBO RÉSOLU ! Tu gagnes 5,000,000 !");
-                }
-            }
-        }
-
-        function updateComboDisplay() {
-            const display = document.getElementById('combo-display');
-            display.innerHTML = [0,1,2].map(i => {
-                const cardId = state.foundCombo[i];
-                if(cardId) {
-                    const card = state.cards.find(x => x.id === cardId);
-                    return `<div class="combo-slot combo-found">${card.img}</div>`;
-                }
-                return `<div class="combo-slot">?</div>`;
-            }).join('');
         }
 
         function showTab(id) {
@@ -187,7 +187,10 @@
             document.getElementById('profit-rate').innerText = "+" + state.profit.toLocaleString();
             document.getElementById('energy-text').innerText = Math.floor(state.energy) + " / " + state.maxE;
             document.getElementById('energy-fill').style.width = (state.energy / 10) + "%";
-            updateComboDisplay();
+            document.getElementById('combo-display').innerHTML = [0,1,2].map(i => {
+                const cardId = state.foundCombo[i];
+                return cardId ? `<div class="combo-slot combo-found">${state.cards.find(x => x.id === cardId).img}</div>` : `<div class="combo-slot">?</div>`;
+            }).join('');
         }
 
         setInterval(() => {
@@ -199,5 +202,4 @@
         updateUI();
     </script>
 </body>
-    </html>
-                
+</html>
