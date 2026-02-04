@@ -16,7 +16,7 @@
             user-select: none;
         }
 
-        /* Header avec Score */
+        /* En-tête Score */
         .header {
             width: 100%; padding: 20px 0;
             text-align: center;
@@ -24,7 +24,7 @@
         .score-container { font-size: 45px; font-weight: bold; color: #fbb03b; }
         .level-badge { background: #152a3d; padding: 5px 15px; border-radius: 20px; font-size: 14px; color: #40E0D0; }
 
-        /* Zone de clic avec le Garba */
+        /* Zone de clic */
         .click-area {
             flex-grow: 1; display: flex; justify-content: center; align-items: center;
             position: relative; width: 100%;
@@ -35,11 +35,12 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* Le cercle orange progressif */
+        /* Le cercle orange qui brille */
         .orange-ring {
             position: absolute; width: 100%; height: 100%;
             border-radius: 50%; border: 6px solid #f39c12;
-            box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
+            box-shadow: 0 0 30px rgba(243, 156, 18, 0.6);
+            z-index: 1;
         }
 
         .garba-img {
@@ -50,7 +51,7 @@
 
         .garba-img:active { transform: scale(0.92); }
 
-        /* Animation +1 */
+        /* Animation +1 qui monte */
         .plus-one {
             position: absolute; color: #fbb03b; font-size: 28px;
             font-weight: bold; pointer-events: none;
@@ -63,7 +64,7 @@
             100% { transform: translateY(-150px); opacity: 0; }
         }
 
-        /* Menu du bas */
+        /* Menu de navigation du bas */
         .bottom-nav {
             width: 100%; display: flex; justify-content: space-around;
             background: #0f2030; padding: 15px 0; border-top: 1px solid #1a3a5a;
@@ -76,13 +77,13 @@
 
     <div class="header">
         <div class="level-badge">Niveau 1: Apprenti</div>
-        <div class="score-container">💰 <span id="score">811</span></div>
+        <div class="score-container">💰 <span id="score">832</span></div>
     </div>
 
     <div class="click-area" id="main-area">
         <div class="garba-container">
             <div class="orange-ring"></div>
-            <img src="https://i.ibb.co/30a0574/garba-img.jpg" class="garba-img" id="garba-btn">
+            <img src="https://i.postimg.cc/mD8zMv7X/garba-img.jpg" class="garba-img" id="garba-btn" onerror="this.src='https://www.referencetid.com/wp-content/uploads/2021/04/Garba-ivoirien.jpg'">
         </div>
     </div>
 
@@ -97,19 +98,18 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let score = 811; // Reprise de ton score actuel
+        let score = 832; // Score mis à jour d'après ta capture
         const scoreElement = document.getElementById('score');
         const garbaBtn = document.getElementById('garba-btn');
-        const mainArea = document.getElementById('main-area');
 
         garbaBtn.addEventListener('touchstart', (e) => {
             score++;
             scoreElement.innerText = score;
 
-            // Vibration haptique Telegram
+            // Vibration haptique
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
-            // Création de l'effet +1
+            // Effet +1
             const touch = e.touches[0];
             const plus = document.createElement('div');
             plus.className = 'plus-one';
@@ -119,12 +119,7 @@
             document.body.appendChild(plus);
 
             setTimeout(() => plus.remove(), 700);
-            
-            // Son de clic (optionnel)
-            // let audio = new Audio('ton_son.mp3'); audio.play();
         });
     </script>
 </body>
 </html>
-
-            
