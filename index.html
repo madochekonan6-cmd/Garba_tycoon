@@ -3,75 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GarbaTycoon</title>
+    <title>Garba Tycoon</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { margin: 0; background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
-        .app { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: radial-gradient(circle, #3d2616 0%, #000000 100%); }
-        h1 { color: #ffaa00; margin-top: 20px; font-size: 2rem; letter-spacing: 2px; }
-        .score-container { font-size: 3rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-        .click-area { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; }
-        .gabba-img { width: 100%; filter: drop-shadow(0 0 20px rgba(255,170,0,0.5)); transition: transform 0.05s; cursor: pointer; }
-        .gabba-img:active { transform: scale(0.92); }
-        .plus-one { position: absolute; color: #00ff00; font-size: 2.5rem; font-weight: 900; animation: floatUp 0.7s ease-out forwards; pointer-events: none; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
-        .footer { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px; box-sizing: border-box; }
-        .btn { background: #ffaa00; color: black; padding: 15px; border-radius: 15px; text-align: center; font-weight: bold; font-size: 0.9rem; box-shadow: 0 4px 0 #b37700; }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #b37700; }
+        :root {
+            --primary-gold: #f3ba2f;
+            --bg-dark: #0a192f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body { 
+            margin: 0; 
+            background: var(--bg-dark); 
+            color: white; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: radial-gradient(circle at center, #112240 0%, #0a192f 100%);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Top Bar & Wallet */
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .connect-wallet {
+            background: #1e4d3a;
+            color: #4ade80;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Points Display */
+        .points-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .points-label {
+            color: var(--primary-gold);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .points-value {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        /* Main Clicker */
+        .clicker-area {
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .garba-main {
+            width: 85%;
+            max-width: 350px;
+            filter: drop-shadow(0 0 30px rgba(243, 186, 47, 0.3));
+            transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .garba-main:active {
+            transform: scale(0.92);
+        }
+
+        /* Floating Animation */
+        .tap-pop {
+            position: absolute;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 900;
+            pointer-events: none;
+            animation: floatPop 0.7s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes floatPop {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-150px) scale(1.2); }
+        }
+
+        /* Bottom Menu */
+        .bottom-nav {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+
+        .nav-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            text-align: center;
+            color: #8892b0;
+            padding: 5px;
+        }
+
+        .nav-icon { font-size: 1.5rem; margin-bottom: 4px; }
+        .nav-item.active { border-color: var(--primary-gold); color: white; }
+
     </style>
 </head>
 <body>
     <div class="app">
-        <h1>GARBATYCOON</h1>
-        <div class="score-container">
-            <span>💰</span><span id="score">0</span>
-        </div>
-        
-        <div class="click-area" id="mainBtn">
-            <img src="https://i.ibb.co/m5mX9nC/garba-plate.png" class="gabba-img" id="gabbaImg">
+        <div class="top-bar">
+            <button class="connect-wallet">Connect Wallet</button>
         </div>
 
-        <div class="footer">
-            <div class="btn" onclick="alert('Bientôt disponible !')">🍟 MENU</div>
-            <div class="btn" onclick="alert('Bientôt disponible !')">📈 BOOST</div>
-            <div class="btn" onclick="alert('Bientôt disponible !')">🤝 AMIS</div>
+        <div class="points-container">
+            <div class="points-label">Points:</div>
+            <div class="points-value" id="score">0</div>
+        </div>
+        
+        <div class="clicker-area" id="tapZone">
+            <img src="Garba.png" class="garba-main" id="garbaImg">
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <span class="nav-icon">🌶️</span>
+                <span>BOOSTS</span>
+            </div>
+            <div class="nav-item active">
+                <span class="nav-icon">🪙</span>
+                <span>EARN TON</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">👥</span>
+                <span>INVITE FRIENDS</span>
+            </div>
         </div>
     </div>
 
     <script>
-        let points = parseInt(localStorage.getItem('garba_points')) || 0;
-        const scoreEl = document.getElementById('score');
-        const mainBtn = document.getElementById('mainBtn');
         const tg = window.Telegram.WebApp;
+        let score = parseInt(localStorage.getItem('garba_score')) || 0;
+        const scoreEl = document.getElementById('score');
+        const tapZone = document.getElementById('tapZone');
 
-        // Initialisation Telegram
-        tg.expand(); 
-        scoreEl.innerText = points.toLocaleString();
+        tg.expand();
+        scoreEl.innerText = score.toLocaleString();
 
-        mainBtn.addEventListener('click', (e) => {
-            // 1. Vibration
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('medium');
-            }
-
-            // 2. Score
-            points++;
-            scoreEl.innerText = points.toLocaleString();
-            localStorage.setItem('garba_points', points);
-
-            // 3. Animation +1
-            const plus = document.createElement('div');
-            plus.innerText = '+1';
-            plus.className = 'plus-one';
+        tapZone.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Empêche le zoom sur mobile
             
-            // Positionnement précis du +1
-            const rect = mainBtn.getBoundingClientRect();
-            plus.style.left = (e.clientX - rect.left) + 'px';
-            plus.style.top = (e.clientY - rect.top) + 'px';
-            
-            mainBtn.appendChild(plus);
-            setTimeout(() => plus.remove(), 700);
+            // Vibration
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+            // Mise à jour Score
+            score += 1;
+            scoreEl.innerText = score.toLocaleString();
+            localStorage.setItem('garba_score', score);
+
+            // Animation +1
+            const touch = e.touches[0];
+            createPop(touch.clientX, touch.clientY);
         });
+
+        function createPop(x, y) {
+            const el = document.createElement('div');
+            el.className = 'tap-pop';
+            el.innerText = '+1';
+            el.style.left = `${x - 20}px`;
+            el.style.top = `${y - 50}px`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 700);
+        }
     </script>
 </body>
 </html>
