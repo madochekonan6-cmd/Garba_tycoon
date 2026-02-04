@@ -4,195 +4,152 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Garba Tycoon</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --gold: #f3ba2f;
-            --bg: #0b0e11;
-            --card-dark: #1c1f24;
-        }
-
-        body { 
-            margin: 0; background: var(--bg); color: white; 
-            font-family: 'Inter', sans-serif; overflow: hidden;
-            user-select: none; -webkit-tap-highlight-color: transparent;
-        }
-
-        .container {
-            height: 100vh; display: flex; flex-direction: column;
-            align-items: center; justify-content: space-between; padding: 20px;
-        }
-
-        /* Top Bar comme Hamster */
-        .top-info {
-            width: 100%; display: flex; justify-content: space-between;
-            background: var(--card-dark); padding: 10px; border-radius: 15px;
-            font-size: 0.8rem; border: 1px solid #333;
-        }
-
-        .stat-box { text-align: center; flex: 1; }
-        .stat-label { color: #848e9c; display: block; margin-bottom: 2px; }
-        .stat-value { color: var(--gold); font-weight: bold; }
-
-        /* Points central */
-        .score-section { text-align: center; margin-top: 20px; }
-        .score-display { font-size: 3.5rem; font-weight: 900; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .score-display span { color: var(--gold); }
-
-        /* IMAGE EN ROND STYLE HAMSTER */
-        .clicker-container {
-            position: relative; width: 300px; height: 300px;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        .circle-outer {
-            width: 280px; height: 280px; border-radius: 50%;
-            background: radial-gradient(circle, #2a2e35 0%, #1c1f24 100%);
-            border: 8px solid #2a2e35; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5); overflow: hidden;
-            transition: transform 0.05s ease;
-        }
-
-        .circle-outer:active { transform: scale(0.95); }
-
-        .garba-main-img {
-            width: 90%; height: 90%; object-fit: cover; border-radius: 50%;
-        }
-
-        /* Upgrade Button */
-        .upgrade-bar { width: 100%; padding: 10px; }
-        .btn-upgrade {
-            width: 100%; background: linear-gradient(90deg, #f3ba2f, #db9b10);
-            border: none; padding: 15px; border-radius: 15px;
-            color: black; font-weight: bold; font-size: 1rem;
-            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.3);
-        }
-
-        /* Footer Menu */
-        .nav-menu {
-            width: 100%; display: grid; grid-template-columns: repeat(4, 1fr);
-            background: #1c1f24; border-radius: 20px 20px 0 0; padding: 15px 0;
-        }
-        .nav-link { text-align: center; font-size: 0.7rem; color: #848e9c; }
-        .nav-link.active { color: white; }
-
-        /* Pop-up animation */
-        .pop { position: absolute; color: white; font-weight: 900; font-size: 2.5rem; animation: popUp 0.8s ease-out forwards; pointer-events: none; }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-150px); } }
+        body { user-select: none; -webkit-tap-highlight-color: transparent; background: #000; color: #fff; font-family: sans-serif; }
+        .tab-content { display: none; }
+        .active { display: block; }
+        .card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 10px; margin-bottom: 10px; }
+        .card img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="top-info">
-        <div class="stat-box">
-            <span class="stat-label">Gain / clic</span>
-            <span class="stat-value">+1</span>
+    <div class="p-4 max-w-md mx-auto pb-24">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-xl font-bold text-yellow-500">GARBA TYCOON</h1>
+                <p id="level-name" class="text-xs text-gray-400">Apprenti du Maquis</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-400">Gain/Heure</p>
+                <p id="profit-rate" class="text-green-500 font-bold">+0</p>
+            </div>
         </div>
-        <div class="stat-box" style="border-left: 1px solid #333; border-right: 1px solid #333;">
-            <span class="stat-label">Niveau</span>
-            <span class="stat-value" id="lvlName">Apprenti</span>
+
+        <div class="text-center mb-8">
+            <h2 id="balance" class="text-5xl font-black text-white">0</h2>
+            <p class="text-yellow-500 text-sm mt-1">PIÈCES</p>
         </div>
-        <div class="stat-box">
-            <span class="stat-label">Gain / heure</span>
-            <span class="stat-value" id="perHour">+0</span>
+
+        <div id="home" class="tab-content active text-center">
+            <div class="relative inline-block mt-4" onclick="clickTap(event)">
+                <img src="1770136311457.png" class="w-64 h-64 mx-auto active:scale-95 transition-transform" alt="Garba">
+            </div>
+            <button id="upgrade-btn" onclick="upgradeLevel()" class="w-full mt-10 bg-yellow-500 text-black font-bold py-4 rounded-xl shadow-lg">
+                UPGRADE: Chargement...
+            </button>
+        </div>
+
+        <div id="mine" class="tab-content">
+            <h3 class="text-lg font-bold mb-4">Améliorez votre Maquis</h3>
+            <div id="cards-container" class="grid grid-cols-2 gap-3">
+                </div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-gray-800 p-3 flex justify-around">
+            <button onclick="showTab('home')" class="text-center text-gray-400 focus:text-yellow-500">
+                <div class="text-xl">🏠</div><span class="text-[10px]">Home</span>
+            </button>
+            <button onclick="showTab('mine')" class="text-center text-gray-400 focus:text-yellow-500">
+                <div class="text-xl">⛏️</div><span class="text-[10px]">Mine</span>
+            </button>
         </div>
     </div>
 
-    <div class="score-section">
-        <h1 class="score-display">🪙 <span id="score">0</span></h1>
-    </div>
+    <script>
+        let balance = 0;
+        let profitPerHour = 0;
+        let currentLevel = 0;
 
-    <div class="clicker-container" id="tapZone">
-        <div class="circle-outer">
-            <img src="1770136311457.png" class="garba-main-img" alt="Garba">
-        </div>
-    </div>
+        // Tes 10 niveaux réorganisés
+        const levels = [
+            { n: "Apprenti", c: 0 }, { n: "Laveur", c: 100 }, { n: "Serveur", c: 800 },
+            { n: "Vendeur", c: 2500 }, { n: "Maître", c: 10000 }, { n: "Gérant", c: 30000 },
+            { n: "Chef", c: 80000 }, { n: "Proprio", c: 200000 }, { n: "Roi", c: 500000 },
+            { n: "Tycoon 👑", c: 1500000 }
+        ];
 
-    <div class="upgrade-bar">
-        <button class="btn-upgrade" id="upBtn">Chargement...</button>
-    </div>
+        // Tes 10 images classées en cartes
+        const cards = [
+            { id: 1, n: "Fourneau", img: "0fc2a7300d0d0d31...", p: 150, r: 5 },
+            { id: 2, n: "Sac d'Attiéké", img: "1b55adc08c1408e...", p: 500, r: 20 },
+            { id: 3, n: "Apprenti", img: "2e53d7ac43f6d2cc...", p: 1200, r: 55 },
+            { id: 4, n: "Livraison", img: "30a0574ef27c0236...", p: 3000, r: 150 },
+            { id: 5, n: "Stand Pro", img: "6fd7072639c8120d...", p: 8000, r: 420 },
+            { id: 6, n: "Poisson Frais", img: "725f1174c7bd19cc...", p: 20000, r: 1100 },
+            { id: 7, n: "Chef Cuisinier", img: "8ee8e877ac8f61dd...", p: 50000, r: 3000 },
+            { id: 8, n: "Pub Facebook", img: "9262d74003d778a...", p: 150000, r: 9500 },
+            { id: 9, n: "Moto Neuve", img: "9451fb0e3ad11cfc...", p: 400000, r: 28000 },
+            { id: 10, n: "Maquis VIP", img: "0fc2a7300d0d0d31...", p: 1000000, r: 75000 }
+        ];
 
-    <div class="nav-menu">
-        <div class="nav-link active">🏠<br>Échange</div>
-        <div class="nav-link">⛏️<br>Mine</div>
-        <div class="nav-link">👥<br>Amis</div>
-        <div class="nav-link">💰<br>Earn</div>
-    </div>
-</div>
-
-<script>
-    const tg = window.Telegram.WebApp;
-    const levels = [
-        { n: "Apprenti", c: 0, p: 0 },
-        { n: "Vendeur Pro", c: 100, p: 2 },
-        { n: "Maître Attiéké", c: 500, p: 8 },
-        { n: "Chef de Maquis", c: 2500, p: 25 },
-        { n: "Roi d'Abidjan", c: 10000, p: 100 },
-        { n: "Garba Tycoon", c: 50000, p: 500 }
-        // Ajoute les autres niveaux ici jusqu'à 20
-    ];
-
-    let score = parseInt(localStorage.getItem('g_score')) || 0;
-    let lvl = parseInt(localStorage.getItem('g_lvl')) || 1;
-
-    function format(n) { return n.toLocaleString(); }
-
-    function sync() {
-        document.getElementById('score').innerText = format(score);
-        document.getElementById('lvlName').innerText = levels[lvl-1].n;
-        document.getElementById('perHour').innerText = "+" + format(levels[lvl-1].p * 3600);
-        
-        const next = levels[lvl];
-        const btn = document.getElementById('upBtn');
-        if(next) {
-            btn.innerText = `UPGRADE: ${next.n} (${format(next.cost || next.c)})`;
-            btn.disabled = false;
-        } else {
-            btn.innerText = "MAX ATTEINT";
-            btn.disabled = true;
+        function sync() {
+            document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
+            document.getElementById('profit-rate').innerText = `+${profitPerHour.toLocaleString()}/h`;
+            document.getElementById('level-name').innerText = levels[currentLevel].n;
+            
+            let next = levels[currentLevel + 1];
+            let btn = document.getElementById('upgrade-btn');
+            if(next) {
+                btn.innerText = `UPGRADE: ${next.n} (${next.c.toLocaleString()})`;
+                btn.disabled = balance < next.c;
+                btn.style.opacity = balance < next.c ? "0.5" : "1";
+            } else {
+                btn.innerText = "NIVEAU MAX ATTEINT";
+                btn.disabled = true;
+            }
         }
-    }
 
-    // Revenu passif (chaque seconde)
-    setInterval(() => {
-        if(lvl > 1) {
-            score += levels[lvl-1].p;
+        function clickTap(e) {
+            balance += (1 + (currentLevel * 2));
             sync();
-            localStorage.setItem('g_score', score);
         }
-    }, 1000);
 
-    // Clic
-    document.getElementById('tapZone').addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        score += 1;
+        function upgradeLevel() {
+            let next = levels[currentLevel + 1];
+            if(next && balance >= next.c) {
+                balance -= next.c;
+                currentLevel++;
+                sync();
+            }
+        }
+
+        function buyCard(id) {
+            let card = cards.find(c => c.id === id);
+            if(balance >= card.p) {
+                balance -= card.p;
+                profitPerHour += card.r;
+                card.p = Math.floor(card.p * 1.5); // Le prix augmente après achat
+                renderCards();
+                sync();
+            }
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = cards.map(c => `
+                <div class="card" onclick="buyCard(${c.id})">
+                    <img src="${c.img}" onerror="this.src='1770136311457.png'">
+                    <p class="font-bold text-sm">${c.n}</p>
+                    <p class="text-[10px] text-green-500">+${c.r}/h</p>
+                    <p class="text-xs text-yellow-500 mt-1">${c.p.toLocaleString()}</p>
+                </div>
+            `).join('');
+        }
+
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // Gain passif chaque seconde
+        setInterval(() => {
+            balance += (profitPerHour / 3600);
+            sync();
+        }, 1000);
+
+        renderCards();
         sync();
-        localStorage.setItem('g_score', score);
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-        
-        const t = e.touches[0];
-        const p = document.createElement('div');
-        p.className = 'pop'; p.innerText = '+1';
-        p.style.left = t.clientX + 'px'; p.style.top = t.clientY + 'px';
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 800);
-    });
-
-    // Upgrade
-    document.getElementById('upBtn').onclick = () => {
-        const next = levels[lvl];
-        if(score >= next.c) {
-            score -= next.c; lvl++;
-            localStorage.setItem('g_lvl', lvl);
-            localStorage.setItem('g_score', score);
-            sync();
-        }
-    };
-
-    tg.expand();
-    sync();
-</script>
-
+    </script>
 </body>
 </html>
