@@ -1,75 +1,61 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GarbaTycoon CI 🇨🇮</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root { --accent: #f39c12; --bg: #05070a; }
-        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        /* SCORE */
-        .header { text-align: center; padding: 20px; }
-        .balance { font-size: 50px; font-weight: 900; color: var(--accent); }
-        
-        /* BOUTON CLIC - IMAGE IVOIRIENNE */
-        .game { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
-        .btn-garba {
-            width: 260px; height: 260px; border-radius: 50%;
-            background: #222; border: 6px solid #fff;
-            box-shadow: 0 15px 0 #8a5a0b, 0 20px 40px rgba(0,0,0,0.6);
-            transition: 0.05s; cursor: pointer; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .btn-garba:active { transform: translateY(10px); box-shadow: 0 5px 0 #8a5a0b; }
-        
-        /* ICI L'IMAGE DU VRAI GARBA */
-        .btn-garba img { width: 100%; height: 100%; object-fit: cover; }
+import React, { useState } from 'react';
+import './Garbatycoon.css';
 
-        /* NAV */
-        .nav { display: flex; justify-content: space-around; padding: 20px; background: #111; border-top: 2px solid #222; }
-        .nav-item { color: #888; text-align: center; font-size: 12px; }
-        
-        .plus-one { position: absolute; font-weight: bold; font-size: 30px; color: white; animation: fly 0.7s forwards; }
-        @keyframes fly { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-100px); } }
-    </style>
-</head>
-<body>
+const Garbatycoon = () => {
+  const [points, setPoints] = useState(0);
+  const [clicks, setClicks] = useState([]);
 
-    <div class="header">
-        <div class="balance" id="score">0</div>
-        <div style="color:#2ecc71">Revenu: +<span id="pps">0</span>/h</div>
-    </div>
+  const handleTap = (e) => {
+    // Augmenter le score
+    setPoints(points + 1);
 
-    <div class="game">
-        <div class="btn-garba" id="tap">
-            <img src="https://raw.githubusercontent.com/richard-coding-officiel/Garba_tycoon/main/garba-img.jpg">
+    // Animation du +1 au point de contact
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const newClick = { id: Date.now(), x, y };
+    setClicks([...clicks, newClick]);
+
+    // Nettoyage de l'animation
+    setTimeout(() => {
+      setClicks((prevClicks) => prevClicks.filter(click => click.id !== newClick.id));
+    }, 800);
+  };
+
+  return (
+    <div className="tycoon-container">
+      <div className="header-stats">
+        <h1 className="game-title">GARBATYCOON</h1>
+        <div className="score-container">
+          <span className="coin-icon">💰</span>
+          <span className="score-value">{points.toLocaleString()}</span>
         </div>
-    </div>
+      </div>
 
-    <div class="nav">
-        <div class="nav-item">🌶️<br>GABAR</div>
-        <div class="nav-item">🏬<br>MARCHÉ</div>
-        <div class="nav-item">💰<br>REVENUS</div>
-    </div>
+      <div className="main-clicker-area">
+        <div className="gabba-trigger" onClick={handleTap}>
+          <img src="/assets/gabba-plate.png" alt="Le Garba" className="gabba-img" />
+          
+          {clicks.map((click) => (
+            <span 
+              key={click.id} 
+              className="tap-animation" 
+              style={{ top: click.y, left: click.x }}
+            >
+              +1
+            </span>
+          ))}
+        </div>
+      </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        let score = 0;
-        
-        document.getElementById('tap').addEventListener('touchstart', (e) => {
-            score++;
-            document.getElementById('score').innerText = score.toLocaleString();
-            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-            
-            let p = document.createElement('div');
-            p.className = 'plus-one'; p.innerText = '+1';
-            p.style.left = e.touches[0].clientX + 'px';
-            p.style.top = e.touches[0].clientY + 'px';
-            document.body.appendChild(p);
-            setTimeout(() => p.remove(), 700);
-        });
-    </script>
-</body>
-</html>
+      <div className="footer-actions">
+        <div className="action-btn">🍟 Menu</div>
+        <div className="action-btn">📈 Améliorer</div>
+        <div className="action-btn">🤝 Inviter</div>
+      </div>
+    </div>
+  );
+};
+
+export default Garbatycoon;
