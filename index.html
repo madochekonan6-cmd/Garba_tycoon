@@ -3,243 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GarbaTycoon Official</title>
+    <title>GarbaTycoon Ultimate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* DESIGN SYSTÈME - DARK PREMIUM */
         :root {
-            --bg-color: #05070a;
-            --accent-color: #f39c12; /* Orange Garba */
-            --secondary-color: #1fb0a3; /* Vert Turquoise */
-            --card-bg: #11141a;
-            --text-main: #ffffff;
-            --text-dim: #888;
+            --bg: #05070a;
+            --accent: #f39c12;
+            --secondary: #1fb0a3;
+            --gold: #f1c40f;
+            --diamond: #00d2ff;
         }
 
         body {
-            margin: 0; padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Inter', -apple-system, sans-serif;
-            display: flex; flex-direction: column;
-            height: 100vh; overflow: hidden;
+            margin: 0; padding: 0; background: var(--bg); color: white;
+            font-family: 'Inter', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
         }
 
-        /* TOP BAR - PROFIL & INFOS */
-        .top-bar {
-            padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(to bottom, rgba(243, 156, 18, 0.1), transparent);
-        }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: bold; color: black; }
+        /* HEADER SCORE */
+        .top-ui { padding: 20px; text-align: center; }
+        .balance { font-size: 55px; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(243, 156, 18, 0.4); }
+        .pps { color: var(--secondary); font-size: 14px; font-weight: bold; margin-top: -5px; }
 
-        /* SCORE PRINCIPAL */
-        .score-section { text-align: center; margin-top: 10px; }
-        .balance { font-size: 50px; font-weight: 900; color: #fff; letter-spacing: -1px; }
-        .pps { color: var(--secondary-color); font-size: 14px; font-weight: bold; margin-top: -5px; }
+        /* BOUTON 3D PREMIUM */
+        .click-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
+        .btn-3d {
+            width: 250px; height: 250px; border-radius: 50%;
+            background: #222; border: 6px solid #fff;
+            position: relative; cursor: pointer;
+            /* L'effet 3D lourd */
+            box-shadow: 0 18px 0 #8a5a0b, 0 25px 40px rgba(0,0,0,0.8);
+            transition: all 0.05s; display: flex; justify-content: center; align-items: center;
+        }
+        .btn-3d:active {
+            transform: translateY(12px);
+            box-shadow: 0 6px 0 #8a5a0b, 0 10px 20px rgba(0,0,0,0.8);
+        }
+        .btn-3d img { 
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            /* On utilise l'image qu'on a trouvée ensemble */
+        }
 
-        /* ZONE DU BOUTON 3D */
-        .game-area {
-            flex-grow: 1; display: flex; justify-content: center; align-items: center;
-            position: relative;
-        }
-        .clicker-container {
-            position: relative; width: 260px; height: 260px;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .outer-glow {
-            position: absolute; width: 100%; height: 100%;
-            border-radius: 50%; background: radial-gradient(circle, rgba(243, 156, 18, 0.2) 0%, transparent 70%);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(0.95); opacity: 0.5; } }
-
-        .garba-button {
-            width: 220px; height: 220px; border-radius: 50%;
-            background: #222; border: 5px solid #fff;
-            box-shadow: 0 15px 0 #8a5a0b, 0 20px 40px rgba(0,0,0,0.7);
-            cursor: pointer; position: relative; z-index: 5;
-            transition: transform 0.05s, box-shadow 0.05s;
-            overflow: hidden;
-        }
-        .garba-button:active {
-            transform: translateY(10px);
-            box-shadow: 0 5px 0 #8a5a0b, 0 10px 20px rgba(0,0,0,0.7);
-        }
-        .garba-button img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* NAVIGATION BASSE (DOCK) */
-        .nav-dock {
-            background: #11141a;
-            display: flex; justify-content: space-around;
-            padding: 12px 0 30px 0;
-            border-top: 1px solid #222;
-        }
-        .nav-tab {
-            display: flex; flex-direction: column; align-items: center;
-            color: var(--text-dim); font-size: 10px; font-weight: bold; cursor: pointer;
-            transition: 0.2s;
-        }
-        .nav-tab.active { color: var(--accent-color); }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
-
-        /* MODAL CONTENT */
-        .full-screen-modal {
-            position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 1000; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
+        /* MODALS */
+        .modal {
+            position: fixed; top: 100%; left: 0; width: 100%; height: 85%;
+            background: #0d1b2a; border-radius: 30px 30px 0 0;
+            z-index: 1000; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
             padding: 20px; box-sizing: border-box; display: flex; flex-direction: column;
         }
-        .full-screen-modal.open { top: 0; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px; }
-
-        .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; overflow-y: auto; padding-bottom: 50px; }
-        .upgrade-card {
-            background: var(--card-bg); border-radius: 16px; padding: 15px;
-            border: 1px solid #222; text-align: center;
-        }
-        .upgrade-card.gold { border-color: #f1c40f; }
-        .upgrade-card.diamond { border-color: #00d2ff; }
-        
-        .upgrade-btn {
-            width: 100%; background: var(--accent-color); border: none; padding: 8px;
-            border-radius: 10px; font-weight: bold; margin-top: 10px;
-        }
-
-        /* +1 ANIMATION */
-        .plus-one { position: absolute; color: white; font-weight: 900; font-size: 32px; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 100; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-150px); } }
-    </style>
-</head>
-<body>
-
-    <div class="top-bar">
-        <div class="user-info">
-            <div class="user-avatar">K</div>
-            <div>
-                <div style="font-size: 12px; font-weight: bold;">KKR (Chef)</div>
-                <div style="font-size: 10px; color: var(--accent-color);">Niveau 1/20</div>
-            </div>
-        </div>
-        <div style="background: #1fb0a3; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: bold;">Wallet</div>
-    </div>
-
-    <div class="score-section">
-        <div class="balance" id="score">0</div>
-        <div class="pps">Revenu: +<span id="pps">0</span>/h</div>
-    </div>
-
-    <div class="game-area">
-        <div class="clicker-container">
-            <div class="outer-glow"></div>
-            <div class="garba-button" id="main-clicker">
-                <img src="https://i.ibb.co/30a0574/garba-img.jpg" onerror="this.src='https://raw.githubusercontent.com/richard-coding-officiel/Garba_tycoon/main/garba-img.jpg'">
-            </div>
-        </div>
-    </div>
-
-    <div class="nav-dock">
-        <div class="nav-tab active" onclick="showTab('main')"><span class="nav-icon">🌶️</span>Jeu</div>
-        <div class="nav-tab" onclick="showTab('market')"><span class="nav-icon">🏬</span>Marché</div>
-        <div class="nav-tab" onclick="showTab('tasks')"><span class="nav-icon">📋</span>Missions</div>
-        <div class="nav-tab" onclick="showTab('friends')"><span class="nav-icon">👥</span>Amis</div>
-    </div>
-
-    <div id="market-modal" class="full-screen-modal">
-        <div class="modal-header">
-            <h2>🏬 Le Marché</h2>
-            <button onclick="closeModal('market-modal')" style="background:none; border:none; color:#fff; font-size:20px;">✖</button>
-        </div>
-        <div class="cards-grid" id="market-list">
-            </div>
-    </div>
-
-    <div id="tasks-modal" class="full-screen-modal">
-        <div class="modal-header">
-            <h2>📋 Missions Earn</h2>
-            <button onclick="closeModal('tasks-modal')" style="background:none; border:none; color:#fff; font-size:20px;">✖</button>
-        </div>
-        <div style="overflow-y: auto;">
-            <h3 style="color: var(--accent-color);">Réseaux Sociaux</h3>
-            </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let score = 0;
-        let pps = 0;
-
-        // DATA PRODUITS
-        const products = [
-            { id: 1, name: "Attiéké Amour", basePrice: 100, baseProfit: 10, lvl: 0 },
-            { id: 2, name: "Attiéké Huile Rouge", basePrice: 500, baseProfit: 45, lvl: 0 },
-            { id: 3, name: "Garba Abo", basePrice: 2000, baseProfit: 150, lvl: 0 },
-            { id: 4, name: "Garba Classe", basePrice: 10000, baseProfit: 800, lvl: 0 }
-        ];
-
-        function showTab(tab) {
-            if (tab === 'market') document.getElementById('market-modal').classList.add('open');
-            if (tab === 'tasks') document.getElementById('tasks-modal').classList.add('open');
-            renderMarket();
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('open');
-        }
-
-        function renderMarket() {
-            const container = document.getElementById('market-list');
-            container.innerHTML = "";
-            products.forEach(p => {
-                let currentCost = Math.floor(p.basePrice * Math.pow(1.5, p.lvl));
-                let rarity = p.lvl >= 15 ? 'diamond' : (p.lvl >= 8 ? 'gold' : '');
-                container.innerHTML += `
-                    <div class="upgrade-card ${rarity}">
-                        <div style="font-size: 10px; color: #888;">Niv. ${p.lvl}/15</div>
-                        <div style="font-weight: bold; margin: 8px 0;">${p.name}</div>
-                        <div style="color: var(--secondary-color); font-size: 12px;">+${p.baseProfit * (p.lvl+1)}/h</div>
-                        <button class="upgrade-btn" onclick="buyUpgrade(${p.id})">
-                            ${p.lvl >= 15 ? 'MAX' : '🪙 ' + currentCost.toLocaleString()}
-                        </button>
-                    </div>`;
-            });
-        }
-
-        function buyUpgrade(id) {
-            const p = products.find(x => x.id === id);
-            let cost = Math.floor(p.basePrice * Math.pow(1.5, p.lvl));
-            if (score >= cost && p.lvl < 15) {
-                score -= cost; p.lvl++; pps += p.baseProfit;
-                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                renderMarket(); updateUI();
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('score').innerText = Math.floor(score).toLocaleString();
-            document.getElementById('pps').innerText = pps.toLocaleString();
-        }
-
-        document.getElementById('main-clicker').addEventListener('touchstart', (e) => {
-            score += 1;
-            updateUI();
-            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-            
-            const touch = e.touches[0];
-            const plus = document.createElement('div');
-            plus.className = 'plus-one';
-            plus.innerText = '+1';
-            plus.style.left = touch.clientX + 'px';
-            plus.style.top = touch.clientY + 'px';
-            document.body.appendChild(plus);
-            setTimeout(() => plus.remove(), 800);
-        });
-
-        setInterval(() => { if(pps > 0) { score += (pps/3600); updateUI(); } }, 1000);
-        updateUI();
-    </script>
-</body>
-            </html>
-            
+        .modal.active { top: 15%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20
+                       
