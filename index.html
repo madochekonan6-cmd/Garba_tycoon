@@ -1,154 +1,143 @@
-
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon - Empire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GarbaTycoon</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --main-color: #ff9f1c; --bg-dark: #011627; }
-        body { background-color: var(--bg-dark); color: white; text-align: center; font-family: sans-serif; margin: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
-        .header { display: flex; justify-content: space-between; padding: 15px; align-items: center; }
-        .lvl-badge { background: #2ec4b6; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 12px; }
-
-        .score-section { margin: 10px 0; }
-        .score-value { font-size: 48px; font-weight: bold; color: var(--main-color); margin: 0; }
-        .passive-income { color: #2ec4b6; font-size: 14px; }
-
-        /* Cercle de progression style Hamster */
-        .garba-container { position: relative; width: 300px; height: 300px; margin: auto; display: flex; align-items: center; justify-content: center; }
-        .progress-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 8px solid rgba(255,255,255,0.1); border-top: 8px solid var(--main-color); transform: rotate(0deg); transition: transform 0.3s; }
-        
-        #garba-button { 
-            width: 260px; height: 260px; border-radius: 50%; object-fit: cover; 
-            border: 5px solid #fff; box-shadow: 0 0 30px rgba(255,159,28,0.5);
-            transition: transform 0.05s; z-index: 5;
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
         }
-        #garba-button:active { transform: scale(0.92); }
 
-        /* Système de Cartes / Shop */
-        .cards-container { display: flex; overflow-x: auto; padding: 10px; gap: 10px; background: rgba(255,255,255,0.05); }
-        .card { min-width: 120px; background: #1a2a3a; padding: 10px; border-radius: 15px; border: 1px solid var(--main-color); font-size: 11px; }
-        .card button { background: var(--main-color); border: none; border-radius: 10px; padding: 5px; width: 100%; font-weight: bold; margin-top: 5px; }
+        /* En-tête */
+        .header {
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 2px solid #f39c12;
+        }
 
-        .floating-point { position: absolute; color: white; font-size: 30px; font-weight: bold; animation: floatUp 0.7s forwards; pointer-events: none; z-index: 20; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-150px); } }
+        .score-container { font-size: 28px; font-weight: bold; color: #f1c40f; }
 
-        .footer-menu { display: flex; justify-content: space-around; padding: 15px; background: #0b1e2d; }
+        /* Zone Clicker */
+        .click-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .garba-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 6px solid #f39c12;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .garba-img:active { transform: scale(0.9); }
+
+        /* SECTION RÉSEAUX SOCIAUX */
+        .social-links {
+            width: 90%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .btn-telegram { background: #0088cc; }
+        .btn-whatsapp { background: #25d366; }
+        .btn-tiktok { background: #000000; border: 1px solid #ff0050; }
+
+        /* Menu du bas */
+        .bottom-menu {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: #2c3e50;
+        }
+
+        .menu-item { text-align: center; font-size: 11px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="lvl-badge" id="lvl-name">Niveau 1: Apprenti</div>
-        <button style="background:#2ec4b6; border:none; color:white; border-radius:15px; padding:5px 10px;">Wallet</button>
+        <div class="score-container">💰 <span id="score">804</span></div>
+        <div style="font-size: 12px; color: #aaa;">Niveau 1: Apprenti</div>
     </div>
 
-    <div class="score-section">
-        <p class="score-value" id="points">0</p>
-        <p class="passive-income">Revenu passif: +<span id="pps">0</span>/h</p>
+    <div class="click-area">
+        <img src="https://i.ibb.co/30a0574/garba-img.jpg" alt="Garba" class="garba-img" id="click-btn">
+        <p>Tape pour gagner !</p>
     </div>
 
-    <div class="garba-container" id="click-area">
-        <div class="progress-ring" id="ring"></div>
-        <img src="1770136311457.png" id="garba-button" alt="Garba">
+    <div class="social-links">
+        <div style="text-align: center; font-size: 12px; margin-bottom: 5px; color: #f39c12;">REJOINS LA COMMUNAUTÉ</div>
+        
+        <a href="https://t.me/GarbaTycoon" class="social-btn btn-telegram">
+            📢 Canal Telegram
+        </a>
+        
+        <a href="https://whatsapp.com/channel/0029VbByzLELI8YSRz9oO614" class="social-btn btn-whatsapp">
+            🟢 Chaîne WhatsApp
+        </a>
+
+        <a href="https://www.tiktok.com/@mobile_pc_gamer1" class="social-btn btn-tiktok">
+            🎵 TikTok Officiel
+        </a>
     </div>
 
-    <p style="font-size: 12px; color: #aaa;">Cartes d'investissement (Revenu Passif)</p>
-    <div class="cards-container">
-        <div class="card">
-            <div>🛒 Stand de Rue</div>
-            <div style="color:#2ec4b6">+50 pts/h</div>
-            <button onclick="buyCard(500, 50)">Prix: 500</button>
-        </div>
-        <div class="card">
-            <div>👩‍🍳 Recruter Tantie</div>
-            <div style="color:#2ec4b6">+200 pts/h</div>
-            <button onclick="buyCard(2000, 200)">Prix: 2k</button>
-        </div>
-        <div class="card">
-            <div>📺 Pub TV (Ad)</div>
-            <div style="color:#e71d36">Regarder Pub</div>
-            <button onclick="showAd()">+1000 pts</button>
-        </div>
-    </div>
-
-    <div class="footer-menu">
-        <div>🚀 Boost</div>
-        <div onclick="alert('Publiée bientôt pour gagner des TON')">💰 Earn</div>
-        <div>👥 Invite</div>
+    <div class="bottom-menu">
+        <div class="menu-item">🏠<br>Accueil</div>
+        <div class="menu-item">🍳<br>Cuisine</div>
+        <div class="menu-item">👥<br>Amis</div>
+        <div class="menu-item">🏆<br>Rangs</div>
     </div>
 
     <script>
-        let count = parseInt(localStorage.getItem('garbaPoints')) || 0;
-        let pps = parseInt(localStorage.getItem('garbaPPS')) || 0;
-        const scoreDisplay = document.getElementById('points');
-        const ppsDisplay = document.getElementById('pps');
-        const ring = document.getElementById('ring');
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-        function updateUI() {
-            scoreDisplay.innerText = Math.floor(count).toLocaleString();
-            ppsDisplay.innerText = pps.toLocaleString();
-            let progress = (count % 1000) / 10;
-            ring.style.transform = `rotate(${progress * 3.6}deg)`;
-            
-            if(count > 5000) document.getElementById('lvl-name').innerText = "Niveau 2: Vendeur Pro";
-            if(count > 20000) document.getElementById('lvl-name').innerText = "Niveau 3: Roi du Garba";
-        }
+        let score = 804;
+        const scoreElement = document.getElementById('score');
+        const clickBtn = document.getElementById('click-btn');
 
-        // Clic sur le Garba
-        document.getElementById('click-area').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            count++;
-            if (navigator.vibrate) navigator.vibrate(40);
-            
-            const touch = e.touches[0];
-            const p = document.createElement('div');
-            p.innerText = "+1";
-            p.className = 'floating-point';
-            p.style.left = touch.clientX + 'px';
-            p.style.top = touch.clientY + 'px';
-            document.body.appendChild(p);
-            setTimeout(() => p.remove(), 700);
-            
-            updateUI();
-            localStorage.setItem('garbaPoints', count);
+        clickBtn.addEventListener('click', () => {
+            score += 1;
+            scoreElement.innerText = score;
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         });
-
-        // Système d'achat de cartes
-        function buyCard(price, income) {
-            if(count >= price) {
-                count -= price;
-                pps += income;
-                localStorage.setItem('garbaPPS', pps);
-                updateUI();
-                alert("Carte achetée ! Ton revenu passif augmente.");
-            } else {
-                alert("Pas assez de points !");
-            }
-        }
-
-        // Simulation de Publicité
-        function showAd() {
-            alert("Chargement de la publicité (Google AdMob / Unity)...");
-            setTimeout(() => {
-                count += 1000;
-                updateUI();
-                alert("Bravo ! Tu as gagné 1000 points grâce à la pub.");
-            }, 2000);
-        }
-
-        // Revenu passif (chaque seconde)
-        setInterval(() => {
-            if(pps > 0) {
-                count += (pps / 3600);
-                updateUI();
-                localStorage.setItem('garbaPoints', count);
-            }
-        }, 1000);
-
-        updateUI();
     </script>
 </body>
 </html>
