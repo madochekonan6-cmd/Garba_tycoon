@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GarbaTycoon</title>
+    <title>GarbaTycoon Cards</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -15,100 +15,97 @@
         }
 
         /* Top Bar */
-        .top-bar {
-            width: 90%; display: flex; justify-content: space-between;
-            padding: 15px 0; align-items: center;
+        .top-bar { width: 90%; display: flex; justify-content: space-between; padding: 15px 0; align-items: center; }
+        .lvl-badge { background: #1a3a5a; border: 1px solid #f39c12; padding: 5px 12px; border-radius: 15px; color: #f39c12; font-weight: bold; cursor: pointer; }
+
+        .header { text-align: center; }
+        .score-container { font-size: 45px; font-weight: bold; color: white; margin: 0; }
+
+        /* Zone de clic */
+        .click-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; width: 100%; }
+        .garba-container { position: relative; width: 260px; height: 260px; display: flex; justify-content: center; align-items: center; }
+        .orange-glow { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #f39c12; box-shadow: 0 0 40px rgba(243, 156, 18, 0.6); }
+        .garba-img { width: 220px; z-index: 2; transition: transform 0.05s; }
+        .garba-img:active { transform: scale(0.92); }
+
+        /* MODAL DES CARTES (Full Screen) */
+        #cards-modal {
+            position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
+            background: #050a0f; z-index: 200; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
         }
-        .connect-wallet {
-            background: #2ecc71; color: white; padding: 8px 15px;
-            border-radius: 20px; font-size: 12px; font-weight: bold;
+        #cards-modal.active { top: 0; }
+
+        .modal-header { padding: 20px; display: flex; justify-content: space-between; background: #0d1b2a; border-bottom: 2px solid #f39c12; }
+        
+        /* Grille des Cartes */
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+            padding: 20px; overflow-y: auto; flex-grow: 1;
         }
 
-        /* Score */
-        .header { text-align: center; margin-top: 10px; }
-        .points-label { color: #f39c12; font-size: 18px; margin-bottom: 5px; }
-        .score-container { font-size: 48px; font-weight: bold; color: white; }
+        .card {
+            background: linear-gradient(145deg, #1a3a5a, #0d1b2a);
+            border-radius: 15px; border: 1px solid #333; padding: 15px;
+            text-align: center; position: relative; transition: 0.3s;
+        }
+        .card.locked { opacity: 0.5; filter: grayscale(1); }
+        .card.unlocked { border-color: #f39c12; box-shadow: 0 0 10px rgba(243, 156, 18, 0.3); }
+        
+        .card-icon { font-size: 30px; margin-bottom: 10px; display: block; }
+        .card-title { font-size: 12px; font-weight: bold; color: #40E0D0; }
+        .card-price { font-size: 10px; color: #f1c40f; margin-top: 5px; }
 
-        /* Zone de clic avec ton image de Garba */
-        .click-area {
-            flex-grow: 1; display: flex; justify-content: center; align-items: center;
-            position: relative; width: 100%;
-        }
-        .garba-container {
-            position: relative; width: 300px; height: 300px;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .orange-glow {
-            position: absolute; width: 100%; height: 100%;
-            border-radius: 50%; border: 4px solid rgba(243, 156, 18, 0.8);
-            box-shadow: 0 0 50px rgba(243, 156, 18, 0.5);
-        }
-        .garba-img {
-            width: 260px; z-index: 2; transition: transform 0.05s;
-            cursor: pointer;
-        }
-        .garba-img:active { transform: scale(0.95); }
+        /* Menu Action Bas */
+        .action-menu { width: 100%; display: flex; justify-content: space-around; padding: 15px 0 30px 0; background: #050a0f; border-top: 1px solid #1a3a5a; }
+        .action-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; cursor: pointer; }
+        .circle-btn { width: 50px; height: 50px; border-radius: 50%; background: #1a3a5a; border: 2px solid #40E0D0; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; font-size: 20px; }
+        .active-btn { border-color: #f39c12; color: #f39c12; }
 
-        /* Animation +1 */
-        .plus-one {
-            position: absolute; color: white; font-size: 32px;
-            font-weight: bold; pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards; z-index: 10;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-150px); opacity: 0; }
-        }
-
-        /* Menu style "Earn" */
-        .action-menu {
-            width: 100%; display: flex; justify-content: space-around;
-            padding-bottom: 30px;
-        }
-        .action-item {
-            display: flex; flex-direction: column; align-items: center;
-            font-size: 10px; color: white; font-weight: bold;
-        }
-        .circle-btn {
-            width: 55px; height: 55px; border-radius: 50%;
-            background: #1a3a5a; border: 2px solid #40E0D0;
-            display: flex; justify-content: center; align-items: center;
-            margin-bottom: 5px; font-size: 20px;
-        }
+        .plus-one { position: absolute; color: white; font-size: 30px; font-weight: bold; pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 10; }
+        @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-130px); opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
-        <span style="font-size: 20px;">🚀</span>
-        <div class="connect-wallet">Connect Wallet</div>
-        <span style="font-size: 20px;">💼</span>
+        <div class="lvl-badge">Niveau <span id="lvl-num">1</span></div>
+        <div style="color: #2ecc71; font-weight: bold; font-size: 12px;">Wallet</div>
     </div>
 
     <div class="header">
-        <div class="points-label">Points:</div>
-        <div class="score-container" id="score">12,456</div>
+        <div id="rank-name" style="font-size: 14px; color: #f39c12;">Chargement...</div>
+        <div class="score-container" id="score">0</div>
     </div>
 
-    <div class="click-area" id="main-area">
+    <div class="click-area">
         <div class="garba-container">
             <div class="orange-glow"></div>
             <img src="https://i.ibb.co/30a0574/garba-img.jpg" class="garba-img" id="garba-btn">
         </div>
     </div>
 
+    <div id="cards-modal">
+        <div class="modal-header">
+            <h3>🎴 Mes Cartes Tycoon</h3>
+            <button onclick="toggleCards()" style="background:none; border:none; color:white; font-size:24px;">✖</button>
+        </div>
+        <div class="cards-grid" id="cards-container">
+            </div>
+    </div>
+
     <div class="action-menu">
-        <div class="action-item">
-            <div class="circle-btn">🌶️</div>
-            BOOSTS
+        <div class="action-item" onclick="toggleCards()">
+            <div class="circle-btn">🎴</div>
+            CARTES
         </div>
         <div class="action-item">
             <div class="circle-btn">🪙</div>
-            EARN TON
+            EARN
         </div>
         <div class="action-item">
             <div class="circle-btn">👥</div>
-            INVITE FRIENDS
+            AMIS
         </div>
     </div>
 
@@ -116,14 +113,55 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let score = 12456; 
-        const scoreElement = document.getElementById('score');
-        const garbaBtn = document.getElementById('garba-btn');
+        let score = 0;
+        let level = 1;
 
-        garbaBtn.addEventListener('touchstart', (e) => {
+        const ranks = [
+            {n: "Apprenti", i: "🥣"}, {n: "Chercheur de Thon", i: "🐟"}, {n: "Vendeur de Rue", i: "🧺"},
+            {n: "Petit Maître", i: "🍳"}, {n: "Chef de Stand", i: "🥘"}, {n: "Propriétaire", i: "🏠"},
+            {n: "Grossiste", i: "📦"}, {n: "Baron du Garba", i: "🎩"}, {n: "Prince", i: "👑"},
+            {n: "Roi du Plateau", i: "🤴"}, {n: "Expert Piment", i: "🌶️"}, {n: "Magnat", i: "🏢"},
+            {n: "PDG Garba Inc", i: "📈"}, {n: "Ministre", i: "🌍"}, {n: "Ambassadeur", i: "🤝"},
+            {n: "Légende", i: "⭐"}, {n: "Empereur", i: "⚜️"}, {n: "Dieu du Garba", i: "🙏"},
+            {n: "Tycoon Suprême", i: "💎"}, {n: "Maître du Monde", i: "🌌"}
+        ];
+
+        function toggleCards() {
+            document.getElementById('cards-modal').classList.toggle('active');
+            renderCards();
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = "";
+            ranks.forEach((rank, index) => {
+                const isLocked = (index + 1) > level;
+                container.innerHTML += `
+                    <div class="card ${isLocked ? 'locked' : 'unlocked'}">
+                        <span class="card-icon">${rank.i}</span>
+                        <span class="card-title">Niv.${index+1} ${rank.n}</span>
+                        <p class="card-price">${isLocked ? 'Bloqué' : 'Débloqué ✅'}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('score').innerText = score.toLocaleString();
+            document.getElementById('lvl-num').innerText = level;
+            document.getElementById('rank-name').innerText = ranks[level - 1].n;
+            
+            let nextLevelScore = level * level * 500;
+            if (score >= nextLevelScore && level < 20) {
+                level++;
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                updateUI();
+            }
+        }
+
+        document.getElementById('garba-btn').addEventListener('touchstart', (e) => {
             score += 1;
-            scoreElement.innerText = score.toLocaleString();
-
+            updateUI();
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
             const touch = e.touches[0];
@@ -133,9 +171,10 @@
             plus.style.left = touch.clientX + 'px';
             plus.style.top = touch.clientY + 'px';
             document.body.appendChild(plus);
-
-            setTimeout(() => plus.remove(), 800);
+            setTimeout(() => plus.remove(), 700);
         });
+
+        updateUI();
     </script>
 </body>
 </html>
