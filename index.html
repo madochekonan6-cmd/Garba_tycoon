@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0; padding: 0;
-            background-color: #121212;
+            background-color: #0b1622;
             color: white;
             font-family: 'Arial', sans-serif;
             display: flex; flex-direction: column;
@@ -16,95 +16,78 @@
             user-select: none;
         }
 
+        /* Header avec Score */
         .header {
-            width: 100%; padding: 15px 0;
-            text-align: center; background: #1a1a1a;
-            border-bottom: 3px solid #f39c12;
+            width: 100%; padding: 20px 0;
+            text-align: center;
         }
+        .score-container { font-size: 45px; font-weight: bold; color: #fbb03b; }
+        .level-badge { background: #152a3d; padding: 5px 15px; border-radius: 20px; font-size: 14px; color: #40E0D0; }
 
-        .score-container { font-size: 38px; font-weight: bold; color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
-        #level-text { color: #f39c12; font-weight: bold; margin-top: 5px; }
-
+        /* Zone de clic avec le Garba */
         .click-area {
-            flex-grow: 1; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
+            flex-grow: 1; display: flex; justify-content: center; align-items: center;
             position: relative; width: 100%;
         }
 
-        /* Le cercle orange qui brille */
-        .garba-circle {
-            width: 230px; height: 230px;
-            border-radius: 50%;
-            border: 8px solid #f39c12;
-            box-shadow: 0 0 40px rgba(243, 156, 18, 0.7);
-            overflow: hidden;
-            transition: transform 0.05s;
-            cursor: pointer;
-            z-index: 2;
+        .garba-container {
+            position: relative; width: 260px; height: 260px;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        .garba-circle:active { transform: scale(0.90); }
-        .garba-circle img { width: 100%; height: 100%; object-fit: cover; }
+        /* Le cercle orange progressif */
+        .orange-ring {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; border: 6px solid #f39c12;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
+        }
 
-        /* Animation du +1 qui saute */
-        .floating-text {
-            position: absolute;
-            color: #f1c40f;
-            font-size: 24px;
-            font-weight: bold;
-            pointer-events: none;
-            animation: floatUp 0.6s ease-out forwards;
+        .garba-img {
+            width: 230px; height: 230px; border-radius: 50%;
+            object-fit: cover; border: 4px solid white;
+            transition: transform 0.05s; z-index: 2;
+        }
+
+        .garba-img:active { transform: scale(0.92); }
+
+        /* Animation +1 */
+        .plus-one {
+            position: absolute; color: #fbb03b; font-size: 28px;
+            font-weight: bold; pointer-events: none;
+            animation: floatUp 0.7s ease-out forwards;
             z-index: 10;
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(0) opacity(1); }
-            100% { transform: translateY(-120px) opacity(0); }
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-150px); opacity: 0; }
         }
 
-        .social-box {
-            width: 100%; display: flex; gap: 10px;
-            padding: 10px 0; justify-content: center;
-            background: rgba(0,0,0,0.3);
+        /* Menu du bas */
+        .bottom-nav {
+            width: 100%; display: flex; justify-content: space-around;
+            background: #0f2030; padding: 15px 0; border-top: 1px solid #1a3a5a;
         }
-
-        .small-btn {
-            padding: 10px 15px; border-radius: 12px;
-            text-decoration: none; color: white; font-size: 12px; font-weight: bold;
-        }
-
-        .nav-bar {
-            width: 100%; display: flex;
-            justify-content: space-around;
-            padding: 15px 0; background: #1a1a1a;
-            border-top: 2px solid #333;
-        }
-
-        .nav-item { text-align: center; color: #888; font-size: 12px; }
-        .active-icon { color: #f39c12; }
+        .nav-item { text-align: center; font-size: 12px; color: #888; }
+        .nav-item.active { color: #fbb03b; }
     </style>
 </head>
 <body>
 
     <div class="header">
+        <div class="level-badge">Niveau 1: Apprenti</div>
         <div class="score-container">💰 <span id="score">811</span></div>
-        <div id="level-text">Niveau 1: Apprenti</div>
     </div>
 
-    <div class="click-area" id="area">
-        <div class="garba-circle" id="click-btn">
-            <img src="https://i.ibb.co/30a0574/garba-img.jpg" alt="Garba">
+    <div class="click-area" id="main-area">
+        <div class="garba-container">
+            <div class="orange-ring"></div>
+            <img src="https://i.ibb.co/30a0574/garba-img.jpg" class="garba-img" id="garba-btn">
         </div>
     </div>
 
-    <div class="social-box">
-        <a href="https://t.me/GarbaTycoon" class="small-btn" style="background:#0088cc;">Telegram</a>
-        <a href="https://whatsapp.com/channel/0029VbByzLELI8YSRz9oO614" class="small-btn" style="background:#25d366;">WhatsApp</a>
-        <a href="https://www.tiktok.com/@mobile_pc_gamer1" class="small-btn" style="background:#000;">TikTok</a>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active-icon">🏠<br>Accueil</div>
+    <div class="bottom-nav">
+        <div class="nav-item active">🏠<br>Accueil</div>
         <div class="nav-item">🍳<br>Cuisine</div>
         <div class="nav-item">👥<br>Amis</div>
         <div class="nav-item">🏆<br>Rangs</div>
@@ -114,41 +97,31 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let score = 811;
-        let currentLevel = 1;
+        let score = 811; // Reprise de ton score actuel
         const scoreElement = document.getElementById('score');
-        const levelElement = document.getElementById('level-text');
-        const clickArea = document.getElementById('area');
+        const garbaBtn = document.getElementById('garba-btn');
+        const mainArea = document.getElementById('main-area');
 
-        document.getElementById('click-btn').addEventListener('click', (e) => {
-            // Augmenter le score
+        garbaBtn.addEventListener('touchstart', (e) => {
             score++;
             scoreElement.innerText = score;
 
-            // Vibration au clic
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            // Vibration haptique Telegram
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
-            // Création du +1 qui saute
-            const plusOne = document.createElement('div');
-            plusOne.innerText = '+1';
-            plusOne.className = 'floating-text';
-            // Positionner au niveau du clic
-            plusOne.style.left = (e.clientX - 10) + 'px';
-            plusOne.style.top = (e.clientY - 20) + 'px';
-            clickArea.appendChild(plusOne);
+            // Création de l'effet +1
+            const touch = e.touches[0];
+            const plus = document.createElement('div');
+            plus.className = 'plus-one';
+            plus.innerText = '+1';
+            plus.style.left = touch.clientX + 'px';
+            plus.style.top = touch.clientY + 'px';
+            document.body.appendChild(plus);
 
-            // Supprimer le texte après l'animation
-            setTimeout(() => { plusOne.remove(); }, 600);
-
-            // Vérifier le passage de niveau (ex: à 1000)
-            if (score >= 1000 && currentLevel === 1) {
-                currentLevel = 2;
-                levelElement.innerText = "Niveau 2: Chef de Stand 👨‍🍳";
-                levelElement.style.color = "#2ecc71";
-                // Grosse vibration pour le niveau
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                alert("BRAVO ! Tu es passé Niveau 2 !");
-            }
+            setTimeout(() => plus.remove(), 700);
+            
+            // Son de clic (optionnel)
+            // let audio = new Audio('ton_son.mp3'); audio.play();
         });
     </script>
 </body>
