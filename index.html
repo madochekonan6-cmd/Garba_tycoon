@@ -1,60 +1,85 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GarbaTycoon</title>
-    <style>
-        body { margin: 0; background: #1a1a1a; color: white; font-family: sans-serif; overflow: hidden; }
-        .app { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: radial-gradient(circle, #3d2616 0%, #000000 100%); }
-        h1 { color: #ffaa00; margin-top: 20px; font-size: 2.5rem; }
-        #score { font-size: 2.5rem; font-weight: bold; }
-        .click-area { position: relative; width: 300px; height: 300px; cursor: pointer; }
-        .click-area img { width: 100%; transition: transform 0.1s; filter: drop-shadow(0 0 15px rgba(255,170,0,0.4)); }
-        .click-area:active img { transform: scale(0.9); }
-        .plus-one { position: absolute; color: #00ff00; font-size: 2rem; font-weight: 900; animation: float 0.8s forwards; pointer-events: none; }
-        @keyframes float { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
-        .footer { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px; box-sizing: border-box; }
-        .btn { background: #ffaa00; color: black; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <div class="app">
-        <h1>GARBATYCOON</h1>
-        <div id="score">0</div>
-        
-        <div class="click-area" id="gabbaBtn">
-            <img src="https://img.icons8.com/emoji/256/poultry-leg.png" id="gabbaImg">
-        </div>
+// Intégration du SDK Telegram (à mettre dans l'en-tête de ton projet)
+// <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-        <div class="footer">
-            <div class="btn">🍟 Menu</div>
-            <div class="btn">📈 Boost</div>
-            <div class="btn">🤝 Amis</div>
-        </div>
+import React, { useState, useEffect } from 'react';
+
+const GarbaTycoon = () => {
+  // 1. État du score avec sauvegarde locale
+  const [points, setPoints] = useState(() => {
+    const saved = localStorage.getItem('garbaPoints');
+    return saved ? parseInt(saved) : 0;
+  });
+
+  const [clicks, setClicks] = useState([]);
+
+  // Sauvegarde automatique dès que le score change
+  useEffect(() => {
+    localStorage.setItem('garbaPoints', points);
+  }, [points]);
+
+  const handleTap = (e) => {
+    // 2. VIBRATION (Haptic Feedback Telegram)
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+    } else if (navigator.vibrate) {
+      navigator.vibrate(50); // Secours pour navigateur classique
+    }
+
+    // 3. Mise à jour du score
+    setPoints(prev => prev + 1);
+
+    // 4. Animation visuelle (+1)
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const newClick = { id: Date.now(), x, y };
+    
+    setClicks([...clicks, newClick]);
+    setTimeout(() => {
+      setClicks(prev => prev.filter(c => c.id !== newClick.id));
+    }, 800);
+  };
+
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.title}>GARBATYCOON</h1>
+      <div style={styles.scoreBoard}>
+        <span style={{ fontSize: '40px' }}>💰</span>
+        <span style={styles.points}>{points.toLocaleString()}</span>
+      </div>
+
+      <div style={styles.clickArea} onClick={handleTap}>
+        {/* Lien direct vers l'image du plat de Garba */}
+        <img 
+          src="https://i.ibb.co/m5mX9nC/garba-plate.png" 
+          alt="Garba" 
+          style={styles.gabbaImage}
+        />
+        {clicks.map(c => (
+          <span key={c.id} style={{ ...styles.plusOne, top: c.y, left: c.x }}>+1</span>
+        ))}
+      </div>
+
+      <div style={styles.footer}>
+        <div style={styles.btn}>🍟 Menu</div>
+        <div style={styles.btn}>📈 Boosts</div>
+        <div style={styles.btn}>🤝 Amis</div>
+      </div>
     </div>
+  );
+};
 
-    <script>
-        let points = parseInt(localStorage.getItem('points')) || 0;
-        const scoreEl = document.getElementById('score');
-        const btn = document.getElementById('gabbaBtn');
-        
-        scoreEl.innerText = points.toLocaleString();
+// Styles CSS intégrés pour éviter les fichiers manquants
+const styles = {
+  container: { height: '100vh', background: 'radial-gradient(circle, #3d2616, #000)', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', userSelect: 'none', touchAction: 'manipulation' },
+  title: { color: '#ffaa00', fontSize: '2.5rem', marginTop: '20px' },
+  scoreBoard: { display: 'flex', alignItems: 'center', gap: '10px' },
+  points: { fontSize: '3rem', fontWeight: 'bold' },
+  clickArea: { position: 'relative', width: '300px', height: '300px' },
+  gabbaImage: { width: '100%', filter: 'drop-shadow(0 0 20px rgba(255,170,0,0.5))', cursor: 'pointer' },
+  plusOne: { position: 'absolute', color: '#00ff00', fontSize: '2rem', fontWeight: 'bold', pointerEvents: 'none', animation: 'floatUp 0.8s forwards' },
+  footer: { width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', padding: '20px' },
+  btn: { background: '#ffaa00', color: 'black', padding: '15px', borderRadius: '15px', textAlign: 'center', fontWeight: 'bold' }
+};
 
-        btn.addEventListener('click', (e) => {
-            points++;
-            scoreEl.innerText = points.toLocaleString();
-            localStorage.setItem('points', points);
-
-            // Créer le +1
-            const plus = document.createElement('div');
-            plus.innerText = '+1';
-            plus.className = 'plus-one';
-            plus.style.left = e.offsetX + 'px';
-            plus.style.top = e.offsetY + 'px';
-            btn.appendChild(plus);
-            setTimeout(() => plus.remove(), 800);
-        });
-    </script>
-</body>
-</html>
+export default GarbaTycoon;
