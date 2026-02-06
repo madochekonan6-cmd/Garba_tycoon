@@ -2,201 +2,168 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Garba Tycoon Pro - VIBRATION FIX</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garba King - Le Jeu Officiel</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { user-select: none; background: #0b0b0d; color: #fff; font-family: sans-serif; margin: 0; overflow: hidden; }
-        .tab-content { display: none; height: 80vh; padding: 15px; overflow-y: auto; padding-bottom: 120px; }
-        .active { display: block; }
+        body { text-align: center; font-family: 'Segoe UI', sans-serif; background-color: #0b0b0b; color: white; margin: 0; padding-bottom: 80px; }
+        .header { background: #1a1a1a; padding: 15px; border-bottom: 2px solid #f39c12; font-weight: bold; color: #f39c12; }
         
-        /* CERCLE JAUNE + IMAGE RONDE */
-        .circle-main {
-            position: relative; width: 250px; height: 250px;
-            margin: 15px auto; border-radius: 50%;
-            border: 6px solid #f59e0b; box-shadow: 0 0 25px #f59e0b;
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
-            background: #1c1c1e; cursor: pointer; transition: transform 0.05s;
-        }
-        .circle-main:active { transform: scale(0.92); }
-        .garba-img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        /* Stats globales (L'Accord) */
+        #global-stats { font-size: 0.8em; background: #222; padding: 10px; color: #bbb; }
 
-        /* COMBO SLOTS */
-        .combo-slot { width: 55px; height: 55px; background: #1c1c1e; border: 2px dashed #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-        .combo-found { border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        .main-container { padding: 20px; }
+        .score-box { margin: 20px auto; }
+        .score { font-size: 3.5em; font-weight: bold; color: #fff; text-shadow: 0 0 10px rgba(243,156,18,0.5); }
+        
+        #garba-img { width: 220px; cursor: pointer; transition: transform 0.1s; filter: drop-shadow(0 0 20px rgba(243,156,18,0.3)); }
+        #garba-img:active { transform: scale(0.92); }
 
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; z-index: 100; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 9px; color: #666; font-weight: bold; }
-        .nav-btn.active-tab { color: #f59e0b; }
+        /* Menu de navigation (Arcade) */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; display: flex; background: #1a1a1a; border-top: 1px solid #333; height: 70px; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; font-size: 0.8em; }
+        .nav-item.active { color: #f39c12; border-top: 2px solid #f39c12; }
+
+        .leaderboard { background: #161616; border-radius: 15px; padding: 15px; margin-top: 20px; text-align: left; }
+        .player-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
+        
+        #arcade-page { display: none; padding: 20px; }
+        .btn-claim { background: #f39c12; border: none; padding: 10px 20px; border-radius: 8px; color: black; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="p-4 max-w-md mx-auto">
-        <div class="flex justify-between items-center mb-4">
-            <button class="bg-blue-600 text-white text-[10px] px-4 py-2 rounded-lg font-bold shadow-lg">💎 Wallet</button>
-            <div class="text-right">
-                <p class="text-[8px] text-gray-500 font-bold uppercase">Profit / h</p>
-                <p id="profit-rate" class="text-green-500 font-bold text-xs">+0</p>
+    <div id="game-page">
+        <div class="header">🍲 GARBA KING 🍲</div>
+        <div id="global-stats">Chargement des données mondiales...</div>
+
+        <div class="main-container">
+            <div id="user-welcome" style="font-size: 0.9em; margin-bottom: 10px;">Salut, Chef !</div>
+            <div class="score-box">
+                <div class="score" id="count">0</div>
+                <div style="color: #f39c12; letter-spacing: 2px;">GARBAS</div>
             </div>
-        </div>
-
-        <div class="text-center mb-2">
-            <h1 id="balance" class="text-5xl font-black tracking-tighter text-white">0</h1>
-        </div>
-
-        <div id="exchange" class="tab-content active">
-            <div class="bg-[#1c1c1e] p-3 rounded-2xl border border-gray-800 mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Gombo du Jour</span>
-                    <span class="text-white font-bold text-[10px]">🎁 5,000,000</span>
-                </div>
-                <div class="flex justify-center gap-4" id="combo-display">
-                    <div class="combo-slot">?</div><div class="combo-slot">?</div><div class="combo-slot">?</div>
-                </div>
-            </div>
-
-            <div class="circle-main" id="main-target">
-                <img src="1770136311457.png" class="garba-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1046/1046788.png'">
-            </div>
-
-            <div class="mt-8 text-center">
-                <p class="text-yellow-500 font-black text-xl">⚡ <span id="energy-text">1000 / 1000</span></p>
-                <div class="w-64 h-2.5 bg-gray-800 rounded-full mx-auto mt-2 overflow-hidden border border-gray-700">
-                    <div id="energy-fill" class="h-full bg-yellow-500 transition-all duration-100" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="mine" class="tab-content">
-            <h2 class="text-center font-black text-gray-500 text-xs mb-6 uppercase tracking-widest">Investissements</h2>
-            <div id="cards-container" class="grid grid-cols-2 gap-3"></div>
-        </div>
-
-        <div id="tasks" class="tab-content text-center">
-            <h2 class="text-yellow-500 font-black mb-6 uppercase">Missions</h2>
-            <div class="bg-[#1c1c1e] p-4 rounded-2xl border border-gray-800 flex justify-between items-center mb-3">
-                <p class="text-xs font-bold">Rejoins le Canal</p>
-                <button onclick="window.open('https://t.me/TON_CANAL')" class="bg-white text-black px-4 py-1 rounded font-black text-[10px]">GO</button>
-            </div>
-        </div>
-
-        <div id="boost" class="tab-content text-center">
-            <h2 class="text-xl font-black mb-6 uppercase">Boosters</h2>
-            <div class="bg-[#1c1c1e] p-8 rounded-3xl border border-yellow-600/30 shadow-2xl">
-                <span class="text-5xl block mb-4">📺</span>
-                <p class="text-gray-400 text-xs mb-6">Regarde une pub pour gagner 5,000 points.</p>
-                <button onclick="watchAd()" class="w-full bg-yellow-600 text-black font-black py-4 rounded-2xl active:scale-95 transition">
-                    VOIR LA PUB (+5000)
-                </button>
+            
+            <img id="garba-img" src="https://cdn-icons-png.flaticon.com/512/1546/1546611.png" alt="Garba">
+            
+            <div class="leaderboard">
+                <h4 style="margin: 0 0 10px 0; color: #f39c12;">🏆 TOP WINNERS</h4>
+                <div id="leaderboard-list"></div>
             </div>
         </div>
     </div>
 
-    <nav>
-        <button onclick="showTab('exchange')" class="nav-btn active-tab" id="btn-exchange">🏠<span>Jeu</span></button>
-        <button onclick="showTab('mine')" class="nav-btn" id="btn-mine">⛏️<span>Mine</span></button>
-        <button onclick="showTab('tasks')" class="nav-btn" id="btn-tasks">📢<span>Missions</span></button>
-        <button onclick="showTab('boost')" class="nav-btn" id="btn-boost">🚀<span>Boost</span></button>
-    </nav>
+    <div id="arcade-page">
+        <div class="header">🎮 ARCADE CENTER</div>
+        <div style="margin-top: 20px;">
+            <div style="background: #222; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                <p>Rejoins notre canal Telegram</p>
+                <button class="btn-claim" onclick="addBonus(1000)">+ 1,000 🍲</button>
+            </div>
+            <div style="background: #222; padding: 15px; border-radius: 12px;">
+                <p>Bonus Quotidien</p>
+                <button class="btn-claim" onclick="addBonus(500)">Récupérer</button>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        const AD_LINK = "https://otieu.com/4/10555812";
-        const COMBO_KEYS = [2, 4, 5];
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="nav('game')">🍲 Jeu</div>
+        <div class="nav-item" onclick="nav('arcade')">🎮 Arcade</div>
+    </div>
 
-        let state = JSON.parse(localStorage.getItem('garba_fix_v2')) || {
-            bal: 0, energy: 1000, maxE: 1000, profit: 0, foundCombo: [],
-            cards: [
-                { id: 1, name: "Poisson Thon", price: 500, profit: 40, img: "🐟" },
-                { id: 2, name: "Huile Rouge", price: 2000, profit: 180, img: "🧴" }, // Combo
-                { id: 3, name: "Gros Charbon", price: 10000, profit: 950, img: "🔥" },
-                { id: 4, name: "Piment Frais", price: 40000, profit: 4500, img: "🌶️" }, // Combo
-                { id: 5, name: "Livreur Moto", price: 120000, profit: 15000, img: "🏍️" }, // Combo
-                { id: 6, name: "Stand VIP", price: 500000, profit: 65000, img: "🎪" }
-            ]
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Configuration Firebase (Garbaking-5f435)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvXVAZhasqI_GqGpFyyClvr2JeakfqlVU",
+            authDomain: "garbaking-5f435.firebaseapp.com",
+            projectId: "garbaking-5f435",
+            storageBucket: "garbaking-5f435.appspot.com",
+            databaseURL: "https://garbaking-5f435-default-rtdb.firebaseio.com/"
         };
 
-        function save() { localStorage.setItem('garba_fix_v2', JSON.stringify(state)); }
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // CLIC PRINCIPAL AVEC VIBRATION ET COMPTEUR FIXÉ
-        document.getElementById('main-target').addEventListener('click', (e) => {
-            if (state.energy >= 1) {
-                state.bal += 1;
-                state.energy -= 1;
-                
-                // VIBRATION RÉTABLIE
-                if (navigator.vibrate) navigator.vibrate(50);
-                
-                updateUI();
-                save();
+        // Connexion Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        const user = tg.initDataUnsafe?.user;
+        const userId = user ? user.id : "local_test_id";
+        const userName = user ? (user.username || user.first_name) : "Chef Anonyme";
+
+        document.getElementById('user-welcome').innerText = "Chef : " + userName;
+
+        const myScoreRef = ref(db, 'users/' + userId);
+        let currentScore = 0;
+
+        // Écoute du score perso
+        onValue(myScoreRef, (snapshot) => {
+            const val = snapshot.val();
+            if(val) {
+                currentScore = val.score;
+                document.getElementById('count').innerText = currentScore.toLocaleString();
             }
         });
 
-        function watchAd() {
-            window.open(AD_LINK, "_blank");
-            state.bal += 5000;
-            updateUI(); save();
-            alert("5,000 points ajoutés !");
+        // Clic sur le Garba
+        document.getElementById('garba-img').onclick = () => {
+            currentScore++;
+            saveScore();
+        };
+
+        // Fonction de sauvegarde
+        function saveScore() {
+            set(myScoreRef, {
+                nom: userName,
+                score: currentScore,
+                updatedAt: Date.now()
+            });
         }
 
-        function buyCard(id) {
-            const c = state.cards.find(x => x.id === id);
-            if(state.bal >= c.price) {
-                state.bal -= c.price;
-                state.profit += c.profit;
-                c.price = Math.floor(c.price * 1.5);
-                
-                if(COMBO_KEYS.includes(id) && !state.foundCombo.includes(id)) {
-                    state.foundCombo.push(id);
-                    if(state.foundCombo.length === 3) {
-                        state.bal += 5000000;
-                        alert("🚨 COMBO RÉSOLU ! +5,000,000 points !");
-                    }
-                }
-                updateUI(); renderCards(); save();
-            }
-        }
+        // Ajout bonus (Arcade)
+        window.addBonus = (amt) => {
+            currentScore += amt;
+            saveScore();
+            alert("Bonus de " + amt + " ajouté !");
+        };
 
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = state.cards.map(c => `
-                <div onclick="buyCard(${c.id})" class="bg-[#1c1c1e] p-4 rounded-2xl border border-gray-800 text-center">
-                    <span class="text-3xl">${c.img}</span>
-                    <p class="text-[10px] font-bold mt-2">${c.name}</p>
-                    <p class="text-[9px] text-green-500 font-bold">+${c.profit}/h</p>
-                    <button class="w-full bg-yellow-600 text-black text-[10px] py-1.5 mt-2 rounded-lg font-black">${c.price.toLocaleString()}</button>
-                </div>
-            `).join('');
-        }
+        // Navigation entre Jeu et Arcade
+        window.nav = (page) => {
+            document.getElementById('game-page').style.display = page === 'game' ? 'block' : 'none';
+            document.getElementById('arcade-page').style.display = page === 'arcade' ? 'block' : 'none';
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        };
 
-        function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
-            document.getElementById('btn-'+id).classList.add('active-tab');
-            if(id === 'mine') renderCards();
-        }
+        // Statistiques Globales et Leaderboard
+        const usersRef = ref(db, 'users');
+        onValue(usersRef, (snapshot) => {
+            let totalGarbas = 0;
+            let totalPlayers = 0;
+            let players = [];
 
-        function updateUI() {
-            document.getElementById('balance').innerText = Math.floor(state.bal).toLocaleString();
-            document.getElementById('profit-rate').innerText = "+" + state.profit.toLocaleString();
-            document.getElementById('energy-text').innerText = Math.floor(state.energy) + " / " + state.maxE;
-            document.getElementById('energy-fill').style.width = (state.energy / (state.maxE/100)) + "%";
-            document.getElementById('combo-display').innerHTML = [0,1,2].map(i => {
-                const cardId = state.foundCombo[i];
-                return cardId ? `<div class="combo-slot combo-found">${state.cards.find(x => x.id === cardId).img}</div>` : `<div class="combo-slot">?</div>`;
-            }).join('');
-        }
+            snapshot.forEach(child => {
+                const data = child.val();
+                totalGarbas += data.score;
+                totalPlayers++;
+                players.push(data);
+            });
 
-        // Boucle Profit et Énergie
-        setInterval(() => {
-            state.bal += (state.profit / 3600);
-            if (state.energy < state.maxE) state.energy = Math.min(state.maxE, state.energy + 2);
-            updateUI();
-        }, 1000);
+            document.getElementById('global-stats').innerText = `🌍 COMMUNAUTÉ : ${totalPlayers} JOUEURS | 🍲 TOTAL : ${totalGarbas.toLocaleString()}`;
 
-        updateUI();
+            // Top 5 Winners
+            players.sort((a,b) => b.score - a.score);
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = "";
+            players.slice(0, 5).forEach((p, i) => {
+                list.innerHTML += `<div class="player-row"><span>#${i+1} ${p.nom}</span><b>${p.score.toLocaleString()}</b></div>`;
+            });
+        });
     </script>
 </body>
                     </html>
-    
+                    
